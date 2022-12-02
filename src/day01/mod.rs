@@ -1,12 +1,14 @@
+use std::collections::BinaryHeap;
+
 use anyhow::Result;
 use itertools::Itertools;
 
-use crate::Runner;
+use crate::{utils::parse_int, Runner};
 
 pub struct Day;
 
-impl Runner<i32, i32> for Day {
-    type Input = Vec<Vec<i32>>;
+impl Runner for Day {
+    type Input = BinaryHeap<usize>;
 
     fn day() -> usize {
         1
@@ -20,7 +22,7 @@ impl Runner<i32, i32> for Day {
             .into_iter()
             .filter_map(|(k, group)| {
                 if k {
-                    Some(group.map(|i| i.parse::<i32>().unwrap()).collect())
+                    Some(group.map(|i| parse_int(i.as_bytes())).sum())
                 } else {
                     None
                 }
@@ -29,13 +31,11 @@ impl Runner<i32, i32> for Day {
         Ok(nums)
     }
 
-    fn part1(input: &Self::Input) -> Result<i32> {
-        let total = input.iter().map(|v| v.iter().sum()).max().unwrap();
-        Ok(total)
+    fn part1(input: &Self::Input) -> Result<usize> {
+        Ok(*input.into_iter().next().unwrap())
     }
 
-    fn part2(input: &Self::Input) -> Result<i32> {
-        let total = input.iter().map(|v| v.iter().sum::<i32>()).sorted();
-        Ok(total.into_iter().rev().take(3).sum())
+    fn part2(input: &Self::Input) -> Result<usize> {
+        Ok(input.into_iter().take(3).sum())
     }
 }
