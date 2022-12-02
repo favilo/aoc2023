@@ -23,9 +23,9 @@ cargo bench
 ## Timings
 
 ```
-day01/get_input         time:   [59.012 µs 59.331 µs 59.785 µs]
-day01/part1             time:   [812.85 ps 813.83 ps 815.02 ps]
-day01/part2             time:   [807.38 ps 809.64 ps 812.11 ps]
+day01/get_input         time:   [64.305 µs 65.579 µs 67.252 µs]
+day01/part1             time:   [840.61 ps 849.15 ps 858.66 ps]
+day01/part2             time:   [78.272 ns 78.778 ns 79.506 ns]
 
 day02/get_input         time:   [58.501 µs 58.756 µs 59.201 µs]
 day02/part1             time:   [7.0590 µs 7.0831 µs 7.1094 µs]

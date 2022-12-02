@@ -36,6 +36,7 @@ impl Runner for Day {
     }
 
     fn part2(input: &Self::Input) -> Result<usize> {
-        Ok(input.into_iter().take(3).sum())
+        let mut heap = input.clone();
+        Ok(heap.pop().unwrap() + heap.pop().unwrap() + heap.pop().unwrap())
     }
 }
