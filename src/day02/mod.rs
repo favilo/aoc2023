@@ -1,8 +1,8 @@
-use std::{cmp::Ordering, str::FromStr};
+use std::cmp::Ordering;
 
 use anyhow::Result;
 
-use crate::Runner;
+use crate::{utils::trim_ascii_whitespace, Runner};
 
 pub struct Day;
 
@@ -60,15 +60,13 @@ impl PartialOrd for Hand {
     }
 }
 
-impl FromStr for Hand {
-    type Err = &'static str;
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        match s {
-            "A" | "X" => Ok(Hand::Rock),
-            "B" | "Y" => Ok(Hand::Paper),
-            "C" | "Z" => Ok(Hand::Scissors),
-            _ => Err("Wrong letter"),
+impl From<&[u8]> for Hand {
+    fn from(s: &[u8]) -> Self {
+        match s[0] {
+            b'A' | b'X' => Hand::Rock,
+            b'B' | b'Y' => Hand::Paper,
+            b'C' | b'Z' => Hand::Scissors,
+            c => panic!("Wrong letter {c:?}"),
         }
     }
 }
@@ -89,12 +87,10 @@ impl Round {
     }
 }
 
-impl FromStr for Round {
-    type Err = &'static str;
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let s: Vec<&str> = s.trim().split(' ').take(2).collect();
-        Ok(Self(Hand::from_str(&s[0])?, Hand::from_str(&s[1])?))
+impl From<&[u8]> for Round {
+    fn from(s: &[u8]) -> Self {
+        let mut s = trim_ascii_whitespace(s).split(u8::is_ascii_whitespace);
+        Self(Hand::from(s.next().unwrap()), Hand::from(s.next().unwrap()))
     }
 }
 
@@ -106,11 +102,7 @@ impl Runner for Day {
     }
 
     fn get_input(input: &str) -> Result<Self::Input> {
-        Ok(input
-            .lines()
-            .map(Round::from_str)
-            .map(Result::unwrap)
-            .collect())
+        Ok(input.lines().map(str::as_bytes).map(Round::from).collect())
     }
 
     fn part1(input: &Self::Input) -> Result<usize> {
