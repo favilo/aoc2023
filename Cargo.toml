@@ -1,0 +1,41 @@
+[package]
+name = "aoc2022"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+anyhow = "1.0.66"
+chrono = "0.4.23"
+clap = { version = "4.0.29", features = ["derive"] }
+fern = { version = "0.6.1", features = ["colored"] }
+home = "0.5.4"
+itertools = "0.10.5"
+log = "0.4.17"
+ndarray = "0.15.6"
+nom = "7.1.1"
+reqwest = { version = "0.11.13", features = ["blocking"] }
+
+[dev-dependencies]
+criterion = "0.3.5"
+pprof = { version = "0.6.1", features = ["flamegraph", "criterion"] }
+
+[[bench]]
+name = "criterion"
+harness = false
+required_features = ["disable_for_tests"]
+
+[profile.release]
+opt-level = 3
+debug = 1
+incremental = true
+
+[profile.bench]
+opt-level = 3
+debug=true
+lto = "thin"
+
+[features]
+day06_ring = []
+disable_for_tests = []
