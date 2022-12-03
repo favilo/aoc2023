@@ -38,7 +38,7 @@ pub fn parse_int(b: &[u8]) -> usize {
 }
 
 #[allow(dead_code)]
-pub fn single_digit_line<'a>(input: &'a [u8]) -> IResult<&'a [u8], Vec<usize>> {
+pub fn single_digit_line(input: &[u8]) -> IResult<&[u8], Vec<usize>> {
     terminated(
         many1(map(one_of("0123456789"), |s| (s as u8 - b'0') as usize)),
         multispace0,

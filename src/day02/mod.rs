@@ -90,7 +90,7 @@ impl Round {
 
     fn outcome(&self) -> Outcome {
         let Self(other, mine) = self;
-        match mine.partial_cmp(&other) {
+        match mine.partial_cmp(other) {
             Some(Ordering::Greater) => Outcome::Win,
             Some(Ordering::Equal) => Outcome::Draw,
             Some(Ordering::Less) => Outcome::Lose,

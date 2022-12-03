@@ -23,7 +23,7 @@ impl Debug for Priority {
 }
 
 impl Priority {
-    fn from_char(c: u8) -> Result<Self> {
+    fn from_ascii(c: u8) -> Result<Self> {
         Ok(Self(match c {
             c @ b'a'..=b'z' => c - b'a' + 1,
             c @ b'A'..=b'Z' => c - b'A' + 27,
@@ -45,7 +45,7 @@ impl Runner for Day {
             .map(|line| {
                 line.trim()
                     .bytes()
-                    .map(Priority::from_char)
+                    .map(Priority::from_ascii)
                     .collect::<Result<_, _>>()
                     .unwrap()
             })
@@ -57,13 +57,13 @@ impl Runner for Day {
             .into_iter()
             .map(|pack| pack.split_at(pack.len() / 2))
             .map(|t| {
-                assert_eq!(t.0.len(), t.1.len());
+                debug_assert_eq!(t.0.len(), t.1.len());
                 t
             })
             .map(|(left, right)| -> usize {
                 let left = HashSet::<_, 32>::from_iter(left.iter().copied());
                 let right = HashSet::<_, 32>::from_iter(right.iter().copied());
-                let mut intersection = left.intersection(&right).copied();
+                let mut intersection = left.intersection(&right);
                 intersection.next().unwrap().0 as usize
             })
             .sum())
