@@ -1,3 +1,4 @@
+use heapless::Vec;
 use std::cmp::Ordering;
 
 use color_eyre::Result;
@@ -106,7 +107,7 @@ impl From<&[u8]> for Round {
 }
 
 impl Runner for Day {
-    type Input = Vec<Round>;
+    type Input = Vec<Round, 2500>;
 
     fn day() -> usize {
         2

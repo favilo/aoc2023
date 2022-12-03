@@ -10,6 +10,8 @@ chrono = "0.4.23"
 clap = { version = "4.0.29", features = ["derive"] }
 color-eyre = "0.6.2"
 fern = { version = "0.6.1", features = ["colored"] }
+hash32 = "0.2.1"
+hash32-derive = "0.1.1"
 heapless = "0.7.16"
 home = "0.5.4"
 itertools = "0.10.5"
