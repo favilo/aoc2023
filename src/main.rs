@@ -1,8 +1,9 @@
-use anyhow::Result;
+use color_eyre::Result;
 use clap::{ArgAction, Parser};
 use fern::colors::{Color, ColoredLevelConfig};
 
 fn setup_logger() -> Result<()> {
+    color_eyre::install()?;
     fern::Dispatch::new()
         .format(|out, message, record| {
             let colors = ColoredLevelConfig::new()

@@ -1,5 +1,6 @@
 use std::{fs::OpenOptions, io::Write};
 
+use color_eyre::{eyre::eyre, Result};
 use ndarray::{Array2, Axis};
 use nom::{
     character::complete::{multispace0, one_of},
@@ -44,16 +45,11 @@ pub fn single_digit_line<'a>(input: &'a [u8]) -> IResult<&'a [u8], Vec<usize>> {
     )(input)
 }
 
-pub fn download_input(
-    day: usize,
-    year: usize,
-    session: &str,
-    filename: &str,
-) -> anyhow::Result<()> {
+pub fn download_input(day: usize, year: usize, session: &str, filename: &str) -> Result<()> {
     let url = format!("https://adventofcode.com/{}/day/{}/input", year, day);
     log::info!("Downloading: {}", url);
     let cookie_header = HeaderValue::from_str(&format!("session={}", session.trim()))
-        .map_err(|err| anyhow::anyhow!("Err: {:?}", err))?;
+        .map_err(|err| eyre!("Err: {:?}", err))?;
     let content_header = HeaderValue::from_str("text/plain")?;
     let mut headers = HeaderMap::new();
     headers.insert(COOKIE, cookie_header);

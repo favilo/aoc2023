@@ -1,6 +1,6 @@
 use std::cmp::Ordering;
 
-use anyhow::Result;
+use color_eyre::Result;
 
 use crate::{utils::trim_ascii_whitespace, Runner};
 
@@ -14,18 +14,26 @@ enum Hand {
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]
-enum Status {
+enum Outcome {
     Lose,
     Draw,
     Win,
 }
 
-impl Status {
+impl Outcome {
     fn from_hand(h: Hand) -> Self {
         match h {
             Hand::Rock => Self::Lose,
             Hand::Paper => Self::Draw,
             Hand::Scissors => Self::Win,
+        }
+    }
+
+    fn score(&self) -> usize {
+        match self {
+            Outcome::Lose => 0,
+            Outcome::Draw => 3,
+            Outcome::Win => 6,
         }
     }
 }
@@ -76,21 +84,24 @@ pub struct Round(Hand, Hand);
 
 impl Round {
     fn score(&self) -> usize {
+        self.outcome().score() + self.1.score()
+    }
+
+    fn outcome(&self) -> Outcome {
         let Self(other, mine) = self;
-        let wins = match mine.partial_cmp(&other) {
-            Some(Ordering::Greater) => 6,
-            Some(Ordering::Equal) => 3,
-            Some(Ordering::Less) => 0,
+        match mine.partial_cmp(&other) {
+            Some(Ordering::Greater) => Outcome::Win,
+            Some(Ordering::Equal) => Outcome::Draw,
+            Some(Ordering::Less) => Outcome::Lose,
             None => unreachable!(),
-        };
-        wins + mine.score()
+        }
     }
 }
 
 impl From<&[u8]> for Round {
     fn from(s: &[u8]) -> Self {
-        let mut s = trim_ascii_whitespace(s).split(u8::is_ascii_whitespace);
-        Self(Hand::from(s.next().unwrap()), Hand::from(s.next().unwrap()))
+        let s = trim_ascii_whitespace(s);
+        Self(Hand::from(&s[0..1]), Hand::from(&s[2..3]))
     }
 }
 
@@ -112,14 +123,14 @@ impl Runner for Day {
     fn part2(input: &Self::Input) -> Result<usize> {
         Ok(input
             .iter()
-            .map(|r| (r.0, Status::from_hand(r.1)))
+            .map(|r| (r.0, Outcome::from_hand(r.1)))
             .map(|(other, s)| {
                 Round(
                     other,
                     match s {
-                        Status::Lose => other.beat().beat(),
-                        Status::Draw => other,
-                        Status::Win => other.beat(),
+                        Outcome::Lose => other.beat().beat(),
+                        Outcome::Draw => other,
+                        Outcome::Win => other.beat(),
                     },
                 )
                 .score()
