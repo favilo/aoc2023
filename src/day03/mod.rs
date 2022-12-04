@@ -1,7 +1,8 @@
 use std::fmt::{Debug, Write};
 
+use byte_set::ByteSet;
 use color_eyre::{eyre::eyre, Result};
-use heapless::{FnvIndexSet as HashSet, Vec};
+use heapless::Vec;
 
 use crate::Runner;
 
@@ -30,10 +31,14 @@ impl Priority {
             c => Err(eyre!("Not letter {c}"))?,
         }))
     }
+
+    fn to_inner(&self) -> u8 {
+        self.0
+    }
 }
 
 impl Runner for Day {
-    type Input = Vec<Vec<Priority, 48>, 300>;
+    type Input = Vec<[ByteSet; 2], 300>;
 
     fn day() -> usize {
         3
@@ -43,11 +48,14 @@ impl Runner for Day {
         Ok(input
             .lines()
             .map(|line| {
-                line.trim()
-                    .bytes()
-                    .map(Priority::from_ascii)
-                    .collect::<Result<_, _>>()
-                    .unwrap()
+                let (first, second) = line.trim().split_at(line.len() / 2);
+                [first, second].map(|line| {
+                    line.bytes()
+                        .map(Priority::from_ascii)
+                        .map(Result::unwrap)
+                        .map(|p| p.to_inner())
+                        .collect::<ByteSet>()
+                })
             })
             .collect())
     }
@@ -55,16 +63,9 @@ impl Runner for Day {
     fn part1(input: &Self::Input) -> Result<usize> {
         Ok(input
             .into_iter()
-            .map(|pack| pack.split_at(pack.len() / 2))
-            .map(|t| {
-                debug_assert_eq!(t.0.len(), t.1.len());
-                t
-            })
-            .map(|(left, right)| -> usize {
-                let left = HashSet::<_, 32>::from_iter(left.iter().copied());
-                let right = HashSet::<_, 32>::from_iter(right.iter().copied());
-                let mut intersection = left.intersection(&right);
-                intersection.next().unwrap().0 as usize
+            .map(|[left, right]| -> usize {
+                let intersection = left.intersection(*right);
+                intersection.into_iter().next().unwrap() as usize
             })
             .sum())
     }
@@ -74,18 +75,13 @@ impl Runner for Day {
             .chunks_exact(3)
             .map(|l| {
                 let [first, second, last] = l else {panic!("Bad number of packs")};
-                let first = HashSet::<_, 32>::from_iter(first.iter().copied());
-                let second = HashSet::<_, 32>::from_iter(second.iter().copied());
-                let last = HashSet::<_, 32>::from_iter(last.iter().copied());
-                let first = first
-                    .intersection(&second)
-                    .copied()
-                    .collect::<HashSet<Priority, 32>>();
-                let mut intersection = first.intersection(&last);
-                intersection.next().unwrap().0 as usize
+                let first = first[0].union(first[1]);
+                let second = second[0].union(second[1]);
+                let last = last[0].union(last[1]);
+                let intersect = first.intersection(second);
+                intersect.intersection(last).into_iter().next().unwrap() as usize
             })
             .sum::<usize>();
-        // todo!();
         Ok(answer)
     }
 }
