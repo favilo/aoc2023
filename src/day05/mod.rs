@@ -9,6 +9,7 @@ use nom::{
     sequence::{delimited, terminated, tuple},
     IResult,
 };
+use heapless::String;
 
 use crate::{parsers::number, Runner};
 
@@ -21,6 +22,7 @@ pub struct Instruction {
     to: usize,
 }
 
+// TODO: Let's see about making these heapless::Vec
 #[derive(Debug, Clone, Default)]
 pub struct Stacks {
     stacks: Vec<Vec<char>>,
@@ -98,7 +100,7 @@ fn stacks<'a>(input: &'a str) -> IResult<&'a str, Stacks, VerboseError<&'a str>>
     ))
 }
 
-impl Runner<String, String> for Day {
+impl Runner<String<9>, String<9>> for Day {
     type Input = Stacks;
 
     fn day() -> usize {
@@ -112,7 +114,7 @@ impl Runner<String, String> for Day {
         Ok(stacks)
     }
 
-    fn part1(input: &Self::Input) -> Result<String> {
+    fn part1(input: &Self::Input) -> Result<String<9>> {
         let mut stacks = input.stacks.clone();
         input
             .instructions
@@ -126,7 +128,7 @@ impl Runner<String, String> for Day {
         Ok(stacks.iter().map(|l| l.last().unwrap()).collect())
     }
 
-    fn part2(input: &Self::Input) -> Result<String> {
+    fn part2(input: &Self::Input) -> Result<String<9>> {
         let mut stacks = input.stacks.clone();
         input
             .instructions
@@ -160,8 +162,8 @@ move 1 from 1 to 2";
 
         let input = Day::get_input(input)?;
         println!("{:?}", input);
-        assert_eq!("CMZ".to_string(), Day::part1(&input)?);
-        assert_eq!("MCD".to_string(), Day::part2(&input)?);
+        assert_eq!("CMZ", &Day::part1(&input)?);
+        assert_eq!("MCD", &Day::part2(&input)?);
         Ok(())
     }
 }
