@@ -40,7 +40,7 @@ day04/part1             time:   [1.2248 µs 1.2271 µs 1.2296 µs]
 day04/part2             time:   [2.1796 µs 2.1856 µs 2.1924 µs]
 
 day05/get_input         time:   [29.265 µs 29.332 µs 29.403 µs]
-day05/part1             time:   [7.0437 µs 7.1417 µs 7.2349 µs]
+day05/part1             time:   [5.6601 µs 5.7118 µs 5.7672 µs]
 day05/part2             time:   [5.0517 µs 5.0745 µs 5.1015 µs]
 
 ```
