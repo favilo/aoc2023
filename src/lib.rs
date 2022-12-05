@@ -16,6 +16,7 @@ use color_eyre::{
 use crate::utils::download_input;
 
 mod utils;
+mod parsers;
 
 const YEAR: usize = 2022;
 
@@ -43,7 +44,7 @@ macro_rules! run_days {
     };
 }
 
-run_days!(day01 = 1, day02 = 2, day03 = 3, day04 = 4,);
+run_days!(day01 = 1, day02 = 2, day03 = 3, day04 = 4, day05 = 5,);
 
 pub trait Runner<Part1 = usize, Part2 = usize>
 where

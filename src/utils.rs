@@ -2,13 +2,7 @@ use std::{fs::OpenOptions, io::Write};
 
 use color_eyre::{eyre::eyre, Result};
 use ndarray::{Array2, Axis};
-use nom::{
-    character::complete::{multispace0, one_of},
-    combinator::map,
-    multi::many1,
-    sequence::terminated,
-    IResult,
-};
+
 use reqwest::{
     blocking::Client,
     header::{HeaderMap, HeaderValue, CONTENT_TYPE, COOKIE},
@@ -35,14 +29,6 @@ pub fn median(l: &[usize]) -> usize {
 #[allow(dead_code)]
 pub fn parse_int(b: &[u8]) -> usize {
     b.iter().fold(0, |a, c| a * 10 + (c & 0x0f) as usize)
-}
-
-#[allow(dead_code)]
-pub fn single_digit_line(input: &[u8]) -> IResult<&[u8], Vec<usize>> {
-    terminated(
-        many1(map(one_of("0123456789"), |s| (s as u8 - b'0') as usize)),
-        multispace0,
-    )(input)
 }
 
 pub fn download_input(day: usize, year: usize, session: &str, filename: &str) -> Result<()> {
