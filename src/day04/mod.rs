@@ -17,15 +17,26 @@ pub struct Day;
 #[derive(Debug)]
 pub struct Pair(RangeInclusive<usize>, RangeInclusive<usize>);
 
-fn inside(first: &RangeInclusive<usize>, second: &RangeInclusive<usize>) -> bool {
-    (first.start() <= second.start() && first.end() >= second.end())
-        || (second.start() <= first.start() && second.end() >= first.end())
+trait RangeIncExt {
+    fn inside(&self, other: &Self) -> bool;
+    fn inside_or_surrounding(&self, other: &Self) -> bool {
+        self.inside(other) || other.inside(self)
+    }
+
+    fn overlaps(&self, other: &Self) -> bool;
 }
 
-fn overlap(first: &RangeInclusive<usize>, second: &RangeInclusive<usize>) -> bool {
-    inside(first, second)
-        || (first.start() <= second.start() && first.end() >= second.start())
-        || (first.start() <= second.end() && first.end() >= second.end())
+impl RangeIncExt for RangeInclusive<usize> {
+    fn inside(&self, other: &Self) -> bool {
+        other.contains(self.start()) && other.contains(self.end())
+    }
+
+    fn overlaps(&self, other: &Self) -> bool {
+        other.contains(self.start())
+            || other.contains(self.end())
+            || self.contains(other.start())
+            || self.contains(other.end())
+    }
 }
 
 fn range(input: &[u8]) -> IResult<&[u8], RangeInclusive<usize>> {
@@ -55,11 +66,14 @@ impl Runner for Day {
     }
 
     fn part1(input: &Self::Input) -> Result<usize> {
-        Ok(input.iter().filter(|Pair(f, s)| inside(f, s)).count())
+        Ok(input
+            .iter()
+            .filter(|Pair(f, s)| f.inside_or_surrounding(s))
+            .count())
     }
 
     fn part2(input: &Self::Input) -> Result<usize> {
-        Ok(input.iter().filter(|Pair(f, s)| overlap(f, s)).count())
+        Ok(input.iter().filter(|Pair(f, s)| f.overlaps(s)).count())
     }
 }
 
