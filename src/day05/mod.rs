@@ -15,7 +15,7 @@ use crate::{parsers::number, Runner};
 
 pub struct Day;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Copy, Clone)]
 pub struct Instruction {
     num: usize,
     from: usize,
@@ -119,12 +119,12 @@ impl Runner<String<9>, String<9>> for Day {
         input
             .instructions
             .iter()
-            .for_each(|Instruction { num, from, to }| {
-                let mut to_stack = std::mem::take(&mut stacks[*to]);
-                let new_len = stacks[*from].len() - num;
-                let drained = stacks[*from].drain(new_len..);
+            .for_each(|&Instruction { num, from, to }| {
+                let mut to_stack = std::mem::take(&mut stacks[to]);
+                let new_len = stacks[from].len() - num;
+                let drained = stacks[from].drain(new_len..);
                 to_stack.extend(drained.rev());
-                let _ = std::mem::replace(&mut stacks[*to], to_stack);
+                let _ = std::mem::replace(&mut stacks[to], to_stack);
             });
         Ok(stacks.iter().map(|l| l.last().unwrap()).collect())
     }
@@ -134,15 +134,15 @@ impl Runner<String<9>, String<9>> for Day {
         input
             .instructions
             .iter()
-            .for_each(|Instruction { num, from, to }| {
+            .for_each(|&Instruction { num, from, to }| {
                 // Need to get around mutable access rules. So we take this one out,
                 // and replace it after adding stuff to it. This is an efficient pointer shift
                 // Not actually cloning data. Or it shouldn't be
-                let mut to_stack = std::mem::take(&mut stacks[*to]);
-                let new_len = stacks[*from].len() - num;
-                let drained = stacks[*from].drain(new_len..);
+                let mut to_stack = std::mem::take(&mut stacks[to]);
+                let new_len = stacks[from].len() - num;
+                let drained = stacks[from].drain(new_len..);
                 to_stack.extend(drained);
-                let _ = std::mem::replace(&mut stacks[*to], to_stack);
+                let _ = std::mem::replace(&mut stacks[to], to_stack);
             });
         Ok(stacks.iter().map(|l| l.last().unwrap()).collect())
     }

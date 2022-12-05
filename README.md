@@ -72,4 +72,19 @@ day05/part2             time:   [14.364 µs 14.828 µs 15.247 µs]
 
 ## Failed experiments
 
-To fill eventually
+### Day 5
+
+Attempting to move all the stuff from Vec's to the stack with heapless ended up giving me the following worse timings: 
+
+```
+day05/get_input         time:   [31.051 µs 31.192 µs 31.307 µs]
+                        change: [-3.5626% -1.3168% +0.4653%] (p = 0.23 > 0.05)
+                        No change in performance detected.
+day05/part1             time:   [10.293 µs 10.303 µs 10.315 µs]
+                        change: [+70.356% +73.084% +75.661%] (p = 0.00 < 0.05)
+                        Performance has regressed.
+day05/part2             time:   [10.931 µs 10.970 µs 11.023 µs]
+                        change: [+92.267% +93.888% +95.383%] (p = 0.00 < 0.05)
+                        Performance has regressed.
+```
+
