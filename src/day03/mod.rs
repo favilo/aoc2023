@@ -1,6 +1,7 @@
 use std::fmt::{Debug, Write};
 
-use color_eyre::{eyre::eyre, Result};
+use byte_set::ByteSet;
+use color_eyre::Result;
 use heapless::Vec;
 
 use crate::Runner;
@@ -52,8 +53,8 @@ impl Priority {
         // return ret;
         let test_lower = (c >> 5) & 1;
         let lower_mask = 0u8.wrapping_sub(test_lower);
-        let p = (lower_mask & (c.wrapping_sub(b'a') + 1))
-            + (!lower_mask & (c.wrapping_sub(b'A') + 27));
+        let p =
+            (lower_mask & (c.wrapping_sub(b'a') + 1)) + (!lower_mask & (c.wrapping_sub(b'A') + 27));
         Self(p)
     }
 
@@ -107,7 +108,7 @@ impl FromIterator<u8> for Set {
 }
 
 impl Runner for Day {
-    type Input = Vec<[Set; 2], 300>;
+    type Input = Vec<[ByteSet; 2], 300>;
 
     fn day() -> usize {
         3
@@ -121,9 +122,9 @@ impl Runner for Day {
                 let (first, second) = line.split_at(line.len() / 2);
                 [first, second].map(|line| {
                     line.bytes()
-                        .map(Priority::from_ascii_branchless)
-                        .map(|p| p.to_inner())
-                        .collect::<Set>()
+                        // .map(Priority::from_ascii_branchless)
+                        // .map(|p| p.to_inner())
+                        .collect::<ByteSet>()
                 })
             })
             .collect())
@@ -134,7 +135,7 @@ impl Runner for Day {
             .into_iter()
             .map(|[left, right]| -> usize {
                 let intersection = left.intersection(*right);
-                intersection.only_item()
+                Priority::from_ascii(intersection.into_iter().next().unwrap()).to_inner() as usize
             })
             .sum())
     }
@@ -148,7 +149,8 @@ impl Runner for Day {
                 let second = second[0].union(second[1]);
                 let last = last[0].union(last[1]);
                 let intersect = first.intersection(second);
-                intersect.intersection(last).only_item()
+                Priority::from_ascii(intersect.intersection(last).into_iter().next().unwrap())
+                    .to_inner() as usize
             })
             .sum::<usize>();
         Ok(answer)
