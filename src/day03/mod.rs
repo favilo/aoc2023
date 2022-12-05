@@ -58,7 +58,7 @@ impl Priority {
         Self(p)
     }
 
-    fn to_inner(&self) -> u8 {
+    fn to_inner(self) -> u8 {
         self.0
     }
 }
@@ -67,6 +67,7 @@ impl Priority {
 #[derive(Clone, Copy)]
 pub struct Set(u64);
 
+#[allow(dead_code)]  // Historical evidence
 impl Set {
     fn union(self, other: Self) -> Self {
         Set(self.0 | other.0)
@@ -120,12 +121,7 @@ impl Runner for Day {
             .map(|line| {
                 let line = line.trim();
                 let (first, second) = line.split_at(line.len() / 2);
-                [first, second].map(|line| {
-                    line.bytes()
-                        // .map(Priority::from_ascii_branchless)
-                        // .map(|p| p.to_inner())
-                        .collect::<ByteSet>()
-                })
+                [first, second].map(|line| line.bytes().collect::<ByteSet>())
             })
             .collect())
     }

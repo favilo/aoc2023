@@ -1,4 +1,5 @@
 use color_eyre::Result;
+use heapless::String;
 use nom::{
     branch::alt,
     bytes::complete::tag,
@@ -9,7 +10,6 @@ use nom::{
     sequence::{delimited, terminated, tuple},
     IResult,
 };
-use heapless::String;
 
 use crate::{parsers::number, Runner};
 
@@ -87,7 +87,7 @@ fn stacks_section(input: &str) -> IResult<&str, Vec<Vec<char>>, VerboseError<&st
     Ok((input, containers))
 }
 
-fn stacks<'a>(input: &'a str) -> IResult<&'a str, Stacks, VerboseError<&'a str>> {
+fn stacks(input: &str) -> IResult<&str, Stacks, VerboseError<&str>> {
     let (input, stacks) = stacks_section(input)?; // Containers section
 
     let (input, instructions) = many1(instruction)(input)?; // Instruction section
@@ -134,7 +134,7 @@ impl Runner<String<9>, String<9>> for Day {
             .instructions
             .iter()
             .for_each(|Instruction { num, from, to }| {
-                let mut to_stack = std::mem::replace(&mut stacks[*to], Vec::default());
+                let mut to_stack = std::mem::take(&mut stacks[*to]);
                 let new_len = stacks[*from].len() - num;
                 let mut drained = stacks[*from].split_off(new_len);
                 to_stack.append(&mut drained);
