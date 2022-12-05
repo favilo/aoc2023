@@ -39,9 +39,9 @@ day04/get_input         time:   [53.297 µs 53.618 µs 54.137 µs]
 day04/part1             time:   [1.2248 µs 1.2271 µs 1.2296 µs]
 day04/part2             time:   [2.1796 µs 2.1856 µs 2.1924 µs]
 
-day05/get_input         time:   [33.789 µs 33.987 µs 34.206 µs]
-day05/part1             time:   [5.4411 µs 5.5016 µs 5.5739 µs]
-day05/part2             time:   [14.364 µs 14.828 µs 15.247 µs]
+day05/get_input         time:   [29.265 µs 29.332 µs 29.403 µs]
+day05/part1             time:   [7.0437 µs 7.1417 µs 7.2349 µs]
+day05/part2             time:   [5.0517 µs 5.0745 µs 5.1015 µs]
 
 ```
 

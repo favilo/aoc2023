@@ -120,10 +120,11 @@ impl Runner<String<9>, String<9>> for Day {
             .instructions
             .iter()
             .for_each(|Instruction { num, from, to }| {
-                (0..*num).for_each(|_| {
-                    let t = stacks[*from].pop().unwrap(); // We'll just panic if we have an empty list
-                    stacks[*to].push(t);
-                });
+                let mut to_stack = std::mem::take(&mut stacks[*to]);
+                let new_len = stacks[*from].len() - num;
+                let drained = stacks[*from].drain(new_len..);
+                to_stack.extend(drained.rev());
+                let _ = std::mem::replace(&mut stacks[*to], to_stack);
             });
         Ok(stacks.iter().map(|l| l.last().unwrap()).collect())
     }
@@ -134,10 +135,13 @@ impl Runner<String<9>, String<9>> for Day {
             .instructions
             .iter()
             .for_each(|Instruction { num, from, to }| {
+                // Need to get around mutable access rules. So we take this one out,
+                // and replace it after adding stuff to it. This is an efficient pointer shift
+                // Not actually cloning data. Or it shouldn't be
                 let mut to_stack = std::mem::take(&mut stacks[*to]);
                 let new_len = stacks[*from].len() - num;
-                let mut drained = stacks[*from].split_off(new_len);
-                to_stack.append(&mut drained);
+                let drained = stacks[*from].drain(new_len..);
+                to_stack.extend(drained);
                 let _ = std::mem::replace(&mut stacks[*to], to_stack);
             });
         Ok(stacks.iter().map(|l| l.last().unwrap()).collect())
