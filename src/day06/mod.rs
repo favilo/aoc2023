@@ -25,6 +25,8 @@ impl Runner for Day {
 }
 
 fn get_index(input: &Vec<u8>, window_size: usize) -> usize {
+    // Fill the set with the first w - 1 items
+    // The XOR will remove an item if it is in there twice.
     let mut set = input
         .into_iter()
         .take(window_size - 1)
@@ -33,10 +35,12 @@ fn get_index(input: &Vec<u8>, window_size: usize) -> usize {
         .windows(window_size)
         .enumerate()
         .find_map(|(i, slice)| {
+            // Add the w_th item
             set ^= 1 << (slice.last().unwrap() - b'a');
             if set.count_ones() == window_size.try_into().unwrap() {
                 return Some(i + window_size);
             }
+            // And when you remove it here, it will turn on if there was an even number of them
             set ^= 1 << (slice.first().unwrap() - b'a');
             None
         })
