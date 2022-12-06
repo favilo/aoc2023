@@ -33,8 +33,7 @@ pub struct Stacks {
 }
 
 fn container(input: &[u8]) -> IResult<&[u8], Crate, VerboseError<&[u8]>> {
-    let (input, c): (&[u8], char) = delimited(tag("["), anychar, tag("]"))(input)?;
-    Ok((input, Crate(c)))
+    map(delimited(tag("["), anychar, tag("]")), |c| Crate(c))(input)
 }
 
 fn hole(input: &[u8]) -> IResult<&[u8], (), VerboseError<&[u8]>> {
@@ -88,15 +87,11 @@ fn stacks_section(input: &[u8]) -> IResult<&[u8], Vec<Vec<Crate>>, VerboseError<
 
     let containers = (0..num_containers)
         .map(|_| {
-            let mut v = Vec::with_capacity(256);
-            v.extend(
-                iters
-                    .iter_mut()
-                    .rev()
-                    .filter_map(|n| n.next().unwrap())
-                    .collect::<Vec<_>>(),
-            );
-            v
+            iters
+                .iter_mut()
+                .rev()
+                .filter_map(|n| n.next().unwrap())
+                .collect::<Vec<_>>()
         })
         .collect::<Vec<_>>();
 
@@ -124,8 +119,7 @@ impl Runner<String<9>, String<9>> for Day {
     }
 
     fn get_input(input: &str) -> Result<Self::Input> {
-        let input = input.to_owned();
-        let (_input, stacks) = all_consuming(stacks)(&input.as_bytes())
+        let (_input, stacks) = all_consuming(stacks)(input.as_bytes())
             .finish()
             .expect("AoC input isn't broken");
         Ok(stacks)

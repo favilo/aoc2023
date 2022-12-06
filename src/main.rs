@@ -1,11 +1,7 @@
-use std::alloc::System;
-
 use clap::{ArgAction, Parser};
 use color_eyre::Result;
 use fern::colors::{Color, ColoredLevelConfig};
-use tracking_allocator::{
-    AllocationGroupId, AllocationGroupToken, AllocationRegistry, AllocationTracker, Allocator,
-};
+use tracking_allocator::{AllocationGroupId, AllocationRegistry, AllocationTracker};
 
 #[global_allocator]
 static GLOBAL: tracking_allocator::Allocator<std::alloc::System> =
@@ -26,7 +22,10 @@ impl AllocationTracker for StdoutTracker {
     ) {
         log::info!(
             "allocation -> addr=0x{:0x} object_size={} wrapped_size={} group_id={:?}",
-            addr, object_size, wrapped_size, group_id
+            addr,
+            object_size,
+            wrapped_size,
+            group_id
         );
     }
 
