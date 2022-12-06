@@ -1,5 +1,6 @@
 use byte_set::ByteSet;
 use color_eyre::Result;
+use multiset::HashMultiSet;
 
 use crate::Runner;
 
@@ -21,7 +22,7 @@ impl Runner for Day {
     }
 
     fn part2(input: &Self::Input) -> Result<usize> {
-        Ok(get_index(input, 14))
+        Ok(get_index2(input, 14))
     }
 }
 
@@ -30,6 +31,26 @@ fn get_index(input: &Vec<u8>, n: usize) -> usize {
         .windows(n)
         .enumerate()
         .find(|(_, slice)| all_different(slice))
+        .unwrap()
+        .0
+        + n
+}
+
+fn get_index2(input: &Vec<u8>, n: usize) -> usize {
+    let mut set = input
+        .into_iter()
+        .take(n)
+        .copied()
+        .collect::<HashMultiSet<_>>();
+    input
+        .windows(n + 1)
+        .enumerate()
+        .find(|(_, slice)| {
+            let found = set.distinct_elements().len() == slice.len() - 1;
+            set.remove(&slice[0]);
+            set.insert(*slice.last().unwrap());
+            found
+        })
         .unwrap()
         .0
         + n

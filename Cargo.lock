@@ -53,6 +53,7 @@ dependencies = [
  "home",
  "itertools",
  "log",
+ "multiset",
  "ndarray",
  "nom",
  "pprof",
@@ -1070,6 +1071,12 @@ dependencies = [
  "wasi 0.11.0+wasi-snapshot-preview1",
  "windows-sys 0.42.0",
 ]
+
+[[package]]
+name = "multiset"
+version = "0.0.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ce8738c9ddd350996cb8b8b718192851df960803764bcdaa3afb44a63b1ddb5c"
 
 [[package]]
 name = "native-tls"
