@@ -7,7 +7,7 @@ use nom::{
     combinator::{all_consuming, map, opt},
     error::VerboseError,
     multi::many1,
-    sequence::{delimited, terminated, tuple},
+    sequence::{delimited, preceded, terminated, tuple},
     Finish, IResult,
 };
 
@@ -58,15 +58,14 @@ fn index_line(input: &[u8]) -> IResult<&[u8], usize, VerboseError<&[u8]>> {
 }
 
 fn instruction(input: &[u8]) -> IResult<&[u8], Instruction, VerboseError<&[u8]>> {
-    let (input, (_, num, _, from, _, to, _)) = tuple((
-        tag("move "),
-        number,
-        tag(" from "),
-        number,
-        tag(" to "),
-        number,
+    let (input, (num, from, to)) = terminated(
+        tuple((
+            preceded(tag("move "), number),
+            preceded(tag(" from "), number),
+            preceded(tag(" to "), number),
+        )),
         opt(newline),
-    ))(input)?;
+    )(input)?;
     Ok((
         input,
         Instruction {
@@ -82,13 +81,25 @@ fn stacks_section(input: &[u8]) -> IResult<&[u8], Vec<Vec<Crate>>, VerboseError<
     let (input, num_containers) = index_line(input)?;
     let (input, _) = multispace1(input)?;
 
-    let mut containers = vec![Vec::default(); num_containers]; // create a vector for each container
+    let mut iters = container_lines
+        .into_iter()
+        .map(|n| n.into_iter())
+        .collect::<Vec<_>>();
 
-    container_lines.iter().for_each(|line| {
-        line.iter()
-            .enumerate()
-            .for_each(|(i, c)| c.iter().for_each(|&c| containers[i].insert(0, c)))
-    });
+    let containers = (0..num_containers)
+        .map(|_| {
+            let mut v = Vec::with_capacity(256);
+            v.extend(
+                iters
+                    .iter_mut()
+                    .rev()
+                    .filter_map(|n| n.next().unwrap())
+                    .collect::<Vec<_>>(),
+            );
+            v
+        })
+        .collect::<Vec<_>>();
+
     Ok((input, containers))
 }
 
@@ -128,8 +139,9 @@ impl Runner<String<9>, String<9>> for Day {
             .for_each(|&Instruction { num, from, to }| {
                 let mut to_stack = std::mem::take(&mut stacks[to]);
                 let new_len = stacks[from].len() - num;
-                let drained = stacks[from].drain(new_len..);
+                let drained = stacks[from][new_len..].into_iter().copied();
                 to_stack.extend(drained.rev());
+                stacks[from].truncate(new_len);
                 let _ = std::mem::replace(&mut stacks[to], to_stack);
             });
         Ok(stacks
@@ -150,8 +162,9 @@ impl Runner<String<9>, String<9>> for Day {
                 // Not actually cloning data. Or it shouldn't be
                 let mut to_stack = std::mem::take(&mut stacks[to]);
                 let new_len = stacks[from].len() - num;
-                let drained = stacks[from].drain(new_len..);
+                let drained = stacks[from][new_len..].into_iter().copied();
                 to_stack.extend(drained);
+                stacks[from].truncate(new_len);
                 let _ = std::mem::replace(&mut stacks[to], to_stack);
             });
         Ok(stacks

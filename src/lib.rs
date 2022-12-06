@@ -12,11 +12,12 @@ use color_eyre::{
     eyre::{Context, ContextCompat},
     Result,
 };
+use tracking_allocator::AllocationRegistry;
 
 use crate::utils::download_input;
 
-mod utils;
 mod parsers;
+mod utils;
 
 const YEAR: usize = 2022;
 
@@ -24,16 +25,16 @@ macro_rules! run_days {
     ($day:ident = $id:expr, $($days:ident = $ids:expr),* $(,)?) => {
         pub mod $day;
         $(pub mod $days;)*
-        pub fn run(days: Vec<usize>) -> Result<Duration> {
+        pub fn run(days: Vec<usize>, track: bool) -> Result<Duration> {
             let mut total_time = Duration::ZERO;
             if days.is_empty() {
-                total_time += $day::Day::run()?;
-                $(total_time += $days::Day::run()?;)+
+                total_time += $day::Day::run(track)?;
+                $(total_time += $days::Day::run(track)?;)+
             } else {
                 for day in days {
                     total_time += match day {
-                        $id => $day::Day::run()?,
-                        $($ids => $days::Day::run()?,)*
+                        $id => $day::Day::run(track)?,
+                        $($ids => $days::Day::run(track)?,)*
                         _ => panic!("Invalid day passed"),
                     }
                 }
@@ -53,7 +54,7 @@ where
 {
     type Input;
 
-    fn run() -> Result<Duration> {
+    fn run(track: bool) -> Result<Duration> {
         let comment = Self::comment();
         let comment = if comment.is_empty() {
             comment.to_owned()
@@ -71,6 +72,9 @@ where
         }
         let input = read_to_string(input_path)?;
         let now = Instant::now();
+        if track {
+            AllocationRegistry::enable_tracking();
+        }
         let input = Self::get_input(&input)?;
         let elapsed_i = now.elapsed();
         log::info!("Generation took {:?}", elapsed_i);
@@ -86,6 +90,9 @@ where
         let output2 = Self::part2(&input);
         let elapsed2 = now.elapsed();
         let output2 = output2?;
+        if track {
+            AllocationRegistry::disable_tracking();
+        }
 
         log::info!("Part 2 - {:?}", output2);
         log::info!("Took {:?}\n", elapsed2);
