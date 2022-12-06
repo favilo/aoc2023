@@ -4,11 +4,11 @@ use nom::{
     branch::alt,
     bytes::complete::tag,
     character::complete::{anychar, char, multispace1, newline},
-    combinator::{map, opt},
+    combinator::{all_consuming, map, opt},
     error::VerboseError,
     multi::many1,
     sequence::{delimited, terminated, tuple},
-    IResult,
+    Finish, IResult,
 };
 
 use crate::{parsers::number, Runner};
@@ -22,25 +22,31 @@ pub struct Instruction {
     to: usize,
 }
 
+#[repr(transparent)]
+#[derive(Debug, Clone, Copy)]
+pub struct Crate(char);
+
 #[derive(Debug, Clone, Default)]
 pub struct Stacks {
-    stacks: Vec<Vec<char>>,
+    stacks: Vec<Vec<Crate>>,
     instructions: Vec<Instruction>,
 }
 
-fn container(input: &[u8]) -> IResult<&[u8], Option<char>, VerboseError<&[u8]>> {
-    let (input, c): (&[u8], Option<char>) = terminated(
-        alt((
-            map(tag("   "), |_| None),                         // Either it's 3 spaces
-            delimited(tag("["), map(anychar, Some), tag("]")), // Or it's `[<letter>]`
-        )),
-        opt(char(' ')), // Might have a single space after it, unless it's the end of the line
-    )(input)?;
-    Ok((input, c))
+fn container(input: &[u8]) -> IResult<&[u8], Crate, VerboseError<&[u8]>> {
+    let (input, c): (&[u8], char) = delimited(tag("["), anychar, tag("]"))(input)?;
+    Ok((input, Crate(c)))
 }
 
-fn container_line(input: &[u8]) -> IResult<&[u8], Vec<Option<char>>, VerboseError<&[u8]>> {
-    terminated(many1(container), newline)(input)
+fn hole(input: &[u8]) -> IResult<&[u8], (), VerboseError<&[u8]>> {
+    map(tag("   "), drop)(input)
+}
+
+fn container_or_hole(input: &[u8]) -> IResult<&[u8], Option<Crate>, VerboseError<&[u8]>> {
+    alt((map(container, Some), map(hole, |_| None)))(input)
+}
+
+fn container_line(input: &[u8]) -> IResult<&[u8], Vec<Option<Crate>>, VerboseError<&[u8]>> {
+    terminated(many1(terminated(container_or_hole, opt(tag(" ")))), newline)(input)
 }
 
 fn index_line(input: &[u8]) -> IResult<&[u8], usize, VerboseError<&[u8]>> {
@@ -71,7 +77,7 @@ fn instruction(input: &[u8]) -> IResult<&[u8], Instruction, VerboseError<&[u8]>>
     ))
 }
 
-fn stacks_section(input: &[u8]) -> IResult<&[u8], Vec<Vec<char>>, VerboseError<&[u8]>> {
+fn stacks_section(input: &[u8]) -> IResult<&[u8], Vec<Vec<Crate>>, VerboseError<&[u8]>> {
     let (input, container_lines) = many1(container_line)(input)?;
     let (input, num_containers) = index_line(input)?;
     let (input, _) = multispace1(input)?;
@@ -108,8 +114,9 @@ impl Runner<String<9>, String<9>> for Day {
 
     fn get_input(input: &str) -> Result<Self::Input> {
         let input = input.to_owned();
-        let (input, stacks) = stacks(&input.as_bytes()).unwrap();
-        debug_assert_eq!(input, b"");
+        let (_input, stacks) = all_consuming(stacks)(&input.as_bytes())
+            .finish()
+            .expect("AoC input isn't broken");
         Ok(stacks)
     }
 
@@ -125,7 +132,11 @@ impl Runner<String<9>, String<9>> for Day {
                 to_stack.extend(drained.rev());
                 let _ = std::mem::replace(&mut stacks[to], to_stack);
             });
-        Ok(stacks.iter().map(|l| l.last().unwrap()).collect())
+        Ok(stacks
+            .iter()
+            .map(|l| l.last().unwrap())
+            .map(|c| c.0 as char)
+            .collect())
     }
 
     fn part2(input: &Self::Input) -> Result<String<9>> {
@@ -143,7 +154,11 @@ impl Runner<String<9>, String<9>> for Day {
                 to_stack.extend(drained);
                 let _ = std::mem::replace(&mut stacks[to], to_stack);
             });
-        Ok(stacks.iter().map(|l| l.last().unwrap()).collect())
+        Ok(stacks
+            .iter()
+            .map(|l| l.last().unwrap())
+            .map(|c| c.0 as char)
+            .collect())
     }
 }
 
