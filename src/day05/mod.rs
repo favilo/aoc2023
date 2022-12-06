@@ -22,15 +22,14 @@ pub struct Instruction {
     to: usize,
 }
 
-// TODO: Let's see about making these heapless::Vec
 #[derive(Debug, Clone, Default)]
 pub struct Stacks {
     stacks: Vec<Vec<char>>,
     instructions: Vec<Instruction>,
 }
 
-fn container(input: &str) -> IResult<&str, Option<char>, VerboseError<&str>> {
-    let (input, c): (&str, Option<char>) = terminated(
+fn container(input: &[u8]) -> IResult<&[u8], Option<char>, VerboseError<&[u8]>> {
+    let (input, c): (&[u8], Option<char>) = terminated(
         alt((
             map(tag("   "), |_| None),                         // Either it's 3 spaces
             delimited(tag("["), map(anychar, Some), tag("]")), // Or it's `[<letter>]`
@@ -40,11 +39,11 @@ fn container(input: &str) -> IResult<&str, Option<char>, VerboseError<&str>> {
     Ok((input, c))
 }
 
-fn container_line(input: &str) -> IResult<&str, Vec<Option<char>>, VerboseError<&str>> {
+fn container_line(input: &[u8]) -> IResult<&[u8], Vec<Option<char>>, VerboseError<&[u8]>> {
     terminated(many1(container), newline)(input)
 }
 
-fn index_line(input: &str) -> IResult<&str, usize, VerboseError<&str>> {
+fn index_line(input: &[u8]) -> IResult<&[u8], usize, VerboseError<&[u8]>> {
     let (input, v) = many1(terminated(
         delimited(char(' '), number, opt(char(' '))),
         alt((char(' '), newline)),
@@ -52,7 +51,7 @@ fn index_line(input: &str) -> IResult<&str, usize, VerboseError<&str>> {
     Ok((input, *v.last().unwrap()))
 }
 
-fn instruction(input: &str) -> IResult<&str, Instruction, VerboseError<&str>> {
+fn instruction(input: &[u8]) -> IResult<&[u8], Instruction, VerboseError<&[u8]>> {
     let (input, (_, num, _, from, _, to, _)) = tuple((
         tag("move "),
         number,
@@ -72,7 +71,7 @@ fn instruction(input: &str) -> IResult<&str, Instruction, VerboseError<&str>> {
     ))
 }
 
-fn stacks_section(input: &str) -> IResult<&str, Vec<Vec<char>>, VerboseError<&str>> {
+fn stacks_section(input: &[u8]) -> IResult<&[u8], Vec<Vec<char>>, VerboseError<&[u8]>> {
     let (input, container_lines) = many1(container_line)(input)?;
     let (input, num_containers) = index_line(input)?;
     let (input, _) = multispace1(input)?;
@@ -87,7 +86,7 @@ fn stacks_section(input: &str) -> IResult<&str, Vec<Vec<char>>, VerboseError<&st
     Ok((input, containers))
 }
 
-fn stacks(input: &str) -> IResult<&str, Stacks, VerboseError<&str>> {
+fn stacks(input: &[u8]) -> IResult<&[u8], Stacks, VerboseError<&[u8]>> {
     let (input, stacks) = stacks_section(input)?; // Containers section
 
     let (input, instructions) = many1(instruction)(input)?; // Instruction section
@@ -109,8 +108,8 @@ impl Runner<String<9>, String<9>> for Day {
 
     fn get_input(input: &str) -> Result<Self::Input> {
         let input = input.to_owned();
-        let (input, stacks) = stacks(&input).unwrap();
-        debug_assert_eq!(input, "");
+        let (input, stacks) = stacks(&input.as_bytes()).unwrap();
+        debug_assert_eq!(input, b"");
         Ok(stacks)
     }
 
