@@ -1,6 +1,4 @@
-use byte_set::ByteSet;
 use color_eyre::Result;
-use multiset::HashMultiSet;
 
 use crate::Runner;
 
@@ -22,46 +20,27 @@ impl Runner for Day {
     }
 
     fn part2(input: &Self::Input) -> Result<usize> {
-        Ok(get_index2(input, 14))
+        Ok(get_index(input, 14))
     }
 }
 
-fn get_index(input: &Vec<u8>, n: usize) -> usize {
-    input
-        .windows(n)
-        .enumerate()
-        .find(|(_, slice)| all_different(slice))
-        .unwrap()
-        .0
-        + n
-}
-
-fn get_index2(input: &Vec<u8>, n: usize) -> usize {
+fn get_index(input: &Vec<u8>, window_size: usize) -> usize {
     let mut set = input
         .into_iter()
-        .take(n)
-        .copied()
-        .collect::<HashMultiSet<_>>();
+        .take(window_size - 1)
+        .fold(0_u64, |a, &c| a ^ (c - b'a') as u64);
     input
-        .windows(n + 1)
+        .windows(window_size)
         .enumerate()
-        .find(|(_, slice)| {
-            let found = set.distinct_elements().len() == slice.len() - 1;
-            set.remove(&slice[0]);
-            set.insert(*slice.last().unwrap());
-            found
+        .find_map(|(i, slice)| {
+            set ^= 1 << (slice.last().unwrap() - b'a');
+            if set.count_ones() == window_size.try_into().unwrap() {
+                return Some(i + window_size);
+            }
+            set ^= 1 << (slice.first().unwrap() - b'a');
+            None
         })
         .unwrap()
-        .0
-        + n
-}
-
-fn all_different(slice: &[u8]) -> bool {
-    let set = slice.into_iter().fold(ByteSet::new(), |mut a, t| {
-        a.insert(*t);
-        a
-    });
-    set.len() == slice.len()
 }
 
 #[cfg(test)]
