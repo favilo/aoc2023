@@ -1,6 +1,6 @@
 use std::fs::read_to_string;
 
-use criterion::{criterion_group, criterion_main, Criterion};
+use criterion::{criterion_group, criterion_main, Criterion, black_box};
 
 use aoc2022::Runner;
 use pprof::{criterion::Output, flamegraph::Options};
@@ -14,11 +14,11 @@ macro_rules! days {
             let input =
                 read_to_string(format!("input/2022/day{:02}.txt", $day::Day::day())).unwrap();
             group.bench_function("get_input", |b| {
-                b.iter(|| $day::Day::get_input(&input))
+                b.iter(|| black_box($day::Day::get_input(&input)))
             });
             let input = $day::Day::get_input(&input).unwrap();
-            group.bench_function("part1", |b| b.iter(|| $day::Day::part1(&input)));
-            group.bench_function("part2", |b| b.iter(|| $day::Day::part2(&input)));
+            group.bench_function("part1", |b| b.iter(|| black_box($day::Day::part1(&input))));
+            group.bench_function("part2", |b| b.iter(|| black_box($day::Day::part2(&input))));
             group.finish();
         }
     };

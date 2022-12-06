@@ -80,7 +80,7 @@ fn stacks_section(input: &[u8]) -> IResult<&[u8], Vec<Vec<Crate>>, VerboseError<
     let (input, num_containers) = index_line(input)?;
     let (input, _) = multispace1(input)?;
 
-    let mut iters = dbg!(container_lines)
+    let mut iters = container_lines
         .into_iter()
         .map(|n| n.into_iter())
         .collect::<Vec<_>>();

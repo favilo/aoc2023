@@ -23,29 +23,29 @@ cargo bench
 ## Timings
 
 ```
-day01/get_input         time:   [41.744 µs 41.776 µs 41.813 µs]
-day01/part1             time:   [506.21 ps 508.32 ps 510.53 ps]
-day01/part2             time:   [1.8163 ns 1.8205 ns 1.8256 ns]
+day01/get_input         time:   [43.604 µs 43.731 µs 43.906 µs]
+day01/part1             time:   [1.1634 ns 1.1662 ns 1.1693 ns]
+day01/part2             time:   [2.6796 ns 2.6848 ns 2.6903 ns]
 
-day02/get_input         time:   [45.677 µs 46.660 µs 47.879 µs]
-day02/part1             time:   [7.4283 µs 7.4775 µs 7.5331 µs]
-day02/part2             time:   [13.339 µs 13.472 µs 13.649 µs]
+day02/get_input         time:   [51.790 µs 51.953 µs 52.126 µs]
+day02/part1             time:   [7.5178 µs 7.5647 µs 7.6226 µs]
+day02/part2             time:   [14.886 µs 14.970 µs 15.085 µs]
 
-day03/get_input         time:   [25.407 µs 25.541 µs 25.707 µs]
-day03/part1             time:   [510.56 ns 513.14 ns 516.31 ns]
-day03/part2             time:   [213.95 ns 215.77 ns 218.01 ns]
+day03/get_input         time:   [27.765 µs 27.930 µs 28.129 µs]
+day03/part1             time:   [457.56 ns 459.16 ns 461.40 ns]
+day03/part2             time:   [216.41 ns 222.24 ns 232.58 ns]
 
-day04/get_input         time:   [53.297 µs 53.618 µs 54.137 µs]
-day04/part1             time:   [1.2248 µs 1.2271 µs 1.2296 µs]
-day04/part2             time:   [2.1796 µs 2.1856 µs 2.1924 µs]
+day04/get_input         time:   [61.826 µs 63.037 µs 64.460 µs]
+day04/part1             time:   [1.8978 µs 1.9409 µs 2.0004 µs]
+day04/part2             time:   [2.0602 µs 2.1320 µs 2.1998 µs]
 
-day05/get_input         time:   [19.419 µs 19.628 µs 19.823 µs]
-day05/part1             time:   [5.6601 µs 5.7118 µs 5.7672 µs]
-day05/part2             time:   [5.0517 µs 5.0745 µs 5.1015 µs]
+day05/get_input         time:   [19.999 µs 20.221 µs 20.468 µs]
+day05/part1             time:   [6.0702 µs 6.1162 µs 6.1735 µs]
+day05/part2             time:   [6.6191 µs 6.7431 µs 6.8672 µs]
 
-day06/get_input         time:   [537.41 ps 543.75 ps 553.47 ps]
-day06/part1             time:   [3.2234 µs 3.2408 µs 3.2600 µs]
-day06/part2             time:   [4.7765 µs 4.8029 µs 4.8315 µs]
+day06/get_input         time:   [1.1940 ns 1.2045 ns 1.2151 ns]
+day06/part1             time:   [4.1462 µs 4.1780 µs 4.2106 µs]
+day06/part2             time:   [6.1832 µs 6.2897 µs 6.4200 µs]
 
 ```
 
