@@ -40,13 +40,13 @@ impl<'a> IntoIterator for &'a Top3 {
 }
 
 impl Runner for Day {
-    type Input = Top3;
+    type Input<'input> = Top3;
 
     fn day() -> usize {
         1
     }
 
-    fn get_input(input: &str) -> Result<Self::Input> {
+    fn get_input<'input>(input: &'input str) -> Result<Self::Input<'input>> {
         let nums = input
             .lines()
             .map(&str::trim)
@@ -63,11 +63,11 @@ impl Runner for Day {
         Ok(nums)
     }
 
-    fn part1(input: &Self::Input) -> Result<usize> {
+    fn part1(input: &Self::Input<'_>) -> Result<usize> {
         Ok(*input.into_iter().next().unwrap())
     }
 
-    fn part2(input: &Self::Input) -> Result<usize> {
+    fn part2(input: &Self::Input<'_>) -> Result<usize> {
         Ok(input.into_iter().sum())
     }
 }
