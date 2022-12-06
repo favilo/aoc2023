@@ -36,14 +36,13 @@ macro_rules! benches {
             config = custom();
             targets = $day,
                 $($days),+
-
         );
 
         criterion_main!(benches);
     };
 }
 
-benches!(day01, day02, day03, day04, day05, );
+benches!(day01, day02, day03, day04, day05, day06,);
 
 fn custom() -> Criterion {
     let mut options = Options::default();
