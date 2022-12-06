@@ -5,21 +5,21 @@ use crate::Runner;
 pub struct Day;
 
 impl Runner for Day {
-    type Input = String;
+    type Input<'input> = &'input str;
 
     fn day() -> usize {
         6
     }
 
-    fn get_input(input: &str) -> Result<Self::Input> {
-        Ok(input.to_owned())
+    fn get_input<'input>(input: &'input str) -> Result<Self::Input<'input>> {
+        Ok(input)
     }
 
-    fn part1(input: &Self::Input) -> Result<usize> {
+    fn part1(input: &Self::Input<'_>) -> Result<usize> {
         Ok(get_index(input.as_bytes(), 4))
     }
 
-    fn part2(input: &Self::Input) -> Result<usize> {
+    fn part2(input: &Self::Input<'_>) -> Result<usize> {
         Ok(get_index(input.as_bytes(), 14))
     }
 }
@@ -37,7 +37,7 @@ fn get_index(input: &[u8], window_size: usize) -> usize {
         .find_map(|(i, slice)| {
             // Add the w_th item
             set ^= 1 << (slice.last().unwrap() - b'a');
-            if set.count_ones() == window_size.try_into().unwrap() {
+            if TryInto::<usize>::try_into(set.count_ones()).unwrap() == window_size {
                 return Some(i + window_size);
             }
             // And when you remove it here, it will turn on if there was an even number of them
@@ -49,38 +49,28 @@ fn get_index(input: &[u8], window_size: usize) -> usize {
 
 #[cfg(test)]
 mod tests {
+    use crate::helpers::sample_case;
+
     use super::*;
 
-    #[test]
-    fn sample1() -> Result<()> {
-        let input = "mjqjpqmgbljsphdztnvjfqwrcgsmlb";
-
-        let input = Day::get_input(input)?;
-        println!("{:?}", input);
-        assert_eq!(7, Day::part1(&input)?);
-        assert_eq!(19, Day::part2(&input)?);
-        Ok(())
+    sample_case! {
+        sample1 =>
+            input = "mjqjpqmgbljsphdztnvjfqwrcgsmlb";
+            part1 = 7;
+            part2 = 19;
     }
 
-    #[test]
-    fn sample2() -> Result<()> {
-        let input = "bvwbjplbgvbhsrlpgdmjqwftvncz";
-
-        let input = Day::get_input(input)?;
-        println!("{:?}", input);
-        assert_eq!(5, Day::part1(&input)?);
-        assert_eq!(23, Day::part2(&input)?);
-        Ok(())
+    sample_case! {
+        sample2 =>
+            input = "bvwbjplbgvbhsrlpgdmjqwftvncz";
+            part1 = 5;
+            part2 = 23;
     }
 
-    #[test]
-    fn sample3() -> Result<()> {
-        let input = "nppdvjthqldpwncqszvftbrmjlhg";
-
-        let input = Day::get_input(input)?;
-        println!("{:?}", input);
-        assert_eq!(6, Day::part1(&input)?);
-        assert_eq!(23, Day::part2(&input)?);
-        Ok(())
+    sample_case! {
+        sample3 =>
+            input = "nppdvjthqldpwncqszvftbrmjlhg";
+            part1 = 6;
+            part2 = 23;
     }
 }

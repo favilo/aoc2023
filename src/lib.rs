@@ -59,7 +59,7 @@ where
     Part1: Debug,
     Part2: Debug,
 {
-    type Input;
+    type Input<'input>;
 
     fn run(track: bool) -> Result<Duration> {
         let comment = Self::comment();
@@ -111,7 +111,40 @@ where
         ""
     }
 
-    fn get_input(_: &str) -> Result<Self::Input>;
-    fn part1(_: &Self::Input) -> Result<Part1>;
-    fn part2(_: &Self::Input) -> Result<Part2>;
+    fn get_input<'input>(_: &'input str) -> Result<Self::Input<'input>>;
+    fn part1(_: &Self::Input<'_>) -> Result<Part1>;
+    fn part2(_: &Self::Input<'_>) -> Result<Part2>;
+}
+
+#[cfg(test)]
+pub(crate) mod helpers {
+    macro_rules! sample_case {
+        ($id:ident => input = $input:expr; part1 = $part1:expr; part2 = $part2:expr;) => {
+            mod $id {
+                use super::*;
+
+                #[test]
+                fn part1() -> Result<()> {
+                    let input = $input;
+                    println!("{:?}", input);
+                    let input = Day::get_input(input)?;
+                    println!("{:?}", input);
+                    assert_eq!($part1, Day::part1(&input)?);
+                    Ok(())
+                }
+
+                #[test]
+                fn part2() -> Result<()> {
+                    let input = $input;
+                    println!("{:?}", input);
+                    let input = Day::get_input(input)?;
+                    println!("{:?}", input);
+                    assert_eq!($part2, Day::part2(&input)?);
+                    Ok(())
+                }
+            }
+        };
+    }
+
+    pub(crate) use sample_case;
 }

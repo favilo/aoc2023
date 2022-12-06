@@ -107,21 +107,21 @@ impl From<&[u8]> for Round {
 }
 
 impl Runner for Day {
-    type Input = Vec<Round, 2500>;
+    type Input<'input> = Vec<Round, 2500>;
 
     fn day() -> usize {
         2
     }
 
-    fn get_input(input: &str) -> Result<Self::Input> {
+    fn get_input<'input>(input: &'input str) -> Result<Self::Input<'input>> {
         Ok(input.lines().map(str::as_bytes).map(Round::from).collect())
     }
 
-    fn part1(input: &Self::Input) -> Result<usize> {
+    fn part1(input: &Self::Input<'_>) -> Result<usize> {
         Ok(input.iter().map(Round::score).sum())
     }
 
-    fn part2(input: &Self::Input) -> Result<usize> {
+    fn part2(input: &Self::Input<'_>) -> Result<usize> {
         Ok(input
             .iter()
             .map(|r| (r.0, Outcome::from_hand(r.1)))

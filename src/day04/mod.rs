@@ -55,46 +55,43 @@ fn pair_vec(input: &[u8]) -> IResult<&[u8], Vec<Pair>> {
 }
 
 impl Runner for Day {
-    type Input = Vec<Pair>;
+    type Input<'input> = Vec<Pair>;
 
     fn day() -> usize {
         4
     }
 
-    fn get_input(input: &str) -> Result<Self::Input> {
+    fn get_input<'input>(input: &'input str) -> Result<Self::Input<'input>> {
         Ok(pair_vec(input.as_bytes()).unwrap().1)
     }
 
-    fn part1(input: &Self::Input) -> Result<usize> {
+    fn part1(input: &Self::Input<'_>) -> Result<usize> {
         Ok(input
             .iter()
-            .filter(|Pair(f, s)| f.inside_or_surrounding(s))
+            .filter(|Pair(f, s)| f.inside_or_surrounding(&s))
             .count())
     }
 
-    fn part2(input: &Self::Input) -> Result<usize> {
-        Ok(input.iter().filter(|Pair(f, s)| f.overlaps(s)).count())
+    fn part2(input: &Self::Input<'_>) -> Result<usize> {
+        Ok(input.iter().filter(|Pair(f, s)| f.overlaps(&s)).count())
     }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::helpers::sample_case;
 
-    #[test]
-    fn sample1() -> Result<()> {
-        let input = "\
+    sample_case! {
+        sample1 =>
+        input = "\
             2-4,6-8
             2-3,4-5
             5-7,7-9
             2-8,3-7
             6-6,4-6
             2-6,4-8";
-
-        let input = Day::get_input(input)?;
-        println!("{:?}", input);
-        assert_eq!(2, Day::part1(&input)?);
-        assert_eq!(4, Day::part2(&input)?);
-        Ok(())
+        part1 = 2;
+        part2 = 4;
     }
 }

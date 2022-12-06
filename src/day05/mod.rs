@@ -80,7 +80,7 @@ fn stacks_section(input: &[u8]) -> IResult<&[u8], Vec<Vec<Crate>>, VerboseError<
     let (input, num_containers) = index_line(input)?;
     let (input, _) = multispace1(input)?;
 
-    let mut iters = container_lines
+    let mut iters = dbg!(container_lines)
         .into_iter()
         .map(|n| n.into_iter())
         .collect::<Vec<_>>();
@@ -90,7 +90,7 @@ fn stacks_section(input: &[u8]) -> IResult<&[u8], Vec<Vec<Crate>>, VerboseError<
             iters
                 .iter_mut()
                 .rev()
-                .filter_map(|n| n.next().unwrap())
+                .filter_map(|n| n.next().unwrap_or(None))
                 .collect::<Vec<_>>()
         })
         .collect::<Vec<_>>();
@@ -112,20 +112,21 @@ fn stacks(input: &[u8]) -> IResult<&[u8], Stacks, VerboseError<&[u8]>> {
 }
 
 impl Runner<String<9>, String<9>> for Day {
-    type Input = Stacks;
+    type Input<'input> = Stacks;
 
     fn day() -> usize {
         5
     }
 
-    fn get_input(input: &str) -> Result<Self::Input> {
+    fn get_input<'input>(input: &'input str) -> Result<Self::Input<'input>> {
         let (_input, stacks) = all_consuming(stacks)(input.as_bytes())
             .finish()
+            .map_err(|e| color_eyre::eyre::eyre!("{e:?}"))
             .expect("AoC input isn't broken");
         Ok(stacks)
     }
 
-    fn part1(input: &Self::Input) -> Result<String<9>> {
+    fn part1(input: &Self::Input<'_>) -> Result<String<9>> {
         let mut stacks = input.stacks.clone();
         input
             .instructions
@@ -145,7 +146,7 @@ impl Runner<String<9>, String<9>> for Day {
             .collect())
     }
 
-    fn part2(input: &Self::Input) -> Result<String<9>> {
+    fn part2(input: &Self::Input<'_>) -> Result<String<9>> {
         let mut stacks = input.stacks.clone();
         input
             .instructions
@@ -171,11 +172,13 @@ impl Runner<String<9>, String<9>> for Day {
 
 #[cfg(test)]
 mod tests {
+    use crate::helpers::sample_case;
+
     use super::*;
 
-    #[test]
-    fn sample1() -> Result<()> {
-        let input = "    [D]
+    sample_case! {
+        sample1 =>
+            input = "    [D]
 [N] [C]
 [Z] [M] [P]
  1   2   3
@@ -184,11 +187,7 @@ move 1 from 2 to 1
 move 3 from 1 to 3
 move 2 from 2 to 1
 move 1 from 1 to 2";
-
-        let input = Day::get_input(input)?;
-        println!("{:?}", input);
-        assert_eq!("CMZ", &Day::part1(&input)?);
-        assert_eq!("MCD", &Day::part2(&input)?);
-        Ok(())
+        part1 = "CMZ";
+        part2 = "MCD";
     }
 }

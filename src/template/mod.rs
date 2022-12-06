@@ -5,21 +5,21 @@ use crate::Runner;
 pub struct Day;
 
 impl Runner for Day {
-    type Input = Vec<()>;
+    type Input<'input> = Vec<()>;
 
     fn day() -> usize {
         0 // FIXME
     }
 
-    fn get_input(input: &str) -> Result<Self::Input> {
+    fn get_input<'input>(input: &'input str) -> Result<Self::Input<'input>> {
         todo!()
     }
 
-    fn part1(input: &Self::Input) -> Result<usize> {
+    fn part1(input: &Self::Input<'_>) -> Result<usize> {
         todo!()
     }
 
-    fn part2(input: &Self::Input) -> Result<usize> {
+    fn part2(input: &Self::Input<'_>) -> Result<usize> {
         todo!()
     }
 }
@@ -27,15 +27,12 @@ impl Runner for Day {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::helpers::sample_case;
 
-    #[test]
-    fn sample1() -> Result<()> {
-        let input = "0,3,6";
-
-        let input = Day::get_input(input)?;
-        println!("{:?}", input);
-        assert_eq!(436, Day::part1(&input)?);
-        assert_eq!(175594, Day::part2(&input)?);
-        Ok(())
+    sample_case! {
+        sample1 =>
+            input = "mjqjpqmgbljsphdztnvjfqwrcgsmlb";
+            part1 = 7;
+            part2 = 19;
     }
 }

@@ -67,7 +67,7 @@ impl Priority {
 #[derive(Clone, Copy)]
 pub struct Set(u64);
 
-#[allow(dead_code)]  // Historical evidence
+#[allow(dead_code)] // Historical evidence
 impl Set {
     fn union(self, other: Self) -> Self {
         Set(self.0 | other.0)
@@ -109,13 +109,13 @@ impl FromIterator<u8> for Set {
 }
 
 impl Runner for Day {
-    type Input = Vec<[ByteSet; 2], 300>;
+    type Input<'input> = Vec<[ByteSet; 2], 300>;
 
     fn day() -> usize {
         3
     }
 
-    fn get_input(input: &str) -> Result<Self::Input> {
+    fn get_input<'input>(input: &'input str) -> Result<Self::Input<'input>> {
         Ok(input
             .lines()
             .map(|line| {
@@ -126,7 +126,7 @@ impl Runner for Day {
             .collect())
     }
 
-    fn part1(input: &Self::Input) -> Result<usize> {
+    fn part1(input: &Self::Input<'_>) -> Result<usize> {
         Ok(input
             .into_iter()
             .map(|[left, right]| -> usize {
@@ -136,7 +136,7 @@ impl Runner for Day {
             .sum())
     }
 
-    fn part2(input: &Self::Input) -> Result<usize> {
+    fn part2(input: &Self::Input<'_>) -> Result<usize> {
         let answer = input
             .chunks_exact(3)
             .map(|l| {
@@ -156,22 +156,18 @@ impl Runner for Day {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::helpers::sample_case;
 
-    #[test]
-    fn sample1() -> Result<()> {
-        let input = "\
+    sample_case!{
+        sample1 => input = "\
             vJrwpWtwJgWrhcsFMMfFFhFp
             jqHRNqRjqzjGDLGLrsFMfFZSrLrFZsSL
             PmmdzqPrVvPwwTWBwg
             wMqvLMZHhHMvwLHjbvcjnnSBnvTQFn
             ttgJtRGJQctTZtZT
             CrZsJsPPZsGzwwsLwLmpwMDw";
-
-        let input = Day::get_input(input)?;
-        println!("{:#?}", input);
-        assert_eq!(157, Day::part1(&input)?);
-        assert_eq!(70, Day::part2(&input)?);
-        Ok(())
+        part1 = 157;
+        part2 = 70;
     }
 
     #[test]
