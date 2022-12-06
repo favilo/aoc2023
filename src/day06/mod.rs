@@ -4,6 +4,22 @@ use crate::Runner;
 
 pub struct Day;
 
+#[repr(transparent)]
+#[derive(Debug, Default, Clone, Copy)]
+struct Set(u64);
+
+impl Set {
+    fn toggle(mut self, c: u8) -> Self {
+        debug_assert!(c.is_ascii_lowercase());
+        self.0 ^= 1 << (c - b'a');
+        self
+    }
+
+    fn is_unique(self, ones: usize) -> bool {
+        TryInto::<usize>::try_into(self.0.count_ones()).unwrap() == ones
+    }
+}
+
 impl Runner for Day {
     type Input<'input> = &'input str;
 
@@ -25,23 +41,19 @@ impl Runner for Day {
 }
 
 fn get_index(input: &[u8], window_size: usize) -> usize {
-    // Fill the set with the first w - 1 items
-    // The XOR will remove an item if it is in there twice.
     let mut set = input
         .into_iter()
         .take(window_size - 1)
-        .fold(0_u64, |a, &c| a ^ (1 << (c - b'a')));
+        .fold(Set::default(), |set, &c| set.toggle(c));
     input
         .windows(window_size)
         .enumerate()
         .find_map(|(i, slice)| {
-            // Add the w_th item
-            set ^= 1 << (slice.last().unwrap() - b'a');
-            if TryInto::<usize>::try_into(set.count_ones()).unwrap() == window_size {
+            set = set.toggle(*slice.last().unwrap());
+            if set.is_unique(window_size) {
                 return Some(i + window_size);
             }
-            // And when you remove it here, it will turn on if there was an even number of them
-            set ^= 1 << (slice.first().unwrap() - b'a');
+            set = set.toggle(*slice.first().unwrap());
             None
         })
         .unwrap()
