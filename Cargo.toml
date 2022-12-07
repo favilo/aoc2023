@@ -3,6 +3,9 @@ name = "aoc2022"
 version = "0.1.0"
 edition = "2021"
 
+[lib]
+bench = false
+
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
@@ -24,13 +27,13 @@ reqwest = { version = "0.11.13", features = ["blocking"] }
 tracking-allocator = "0.4.0"
 
 [dev-dependencies]
-criterion = "0.3.5"
+criterion = { version = "0.3.5", features = ["html_reports"] }
 pprof = { version = "0.6.1", features = ["flamegraph", "criterion"] }
 
 [[bench]]
 name = "criterion"
 harness = false
-required_features = ["disable_for_tests"]
+# required_features = ["disable_for_tests"]
 
 [profile.release]
 opt-level = 3
