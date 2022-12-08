@@ -53,6 +53,7 @@ run_days!(
     day05 = 5,
     day06 = 6,
     day07 = 7,
+    day08 = 8,
 );
 
 pub trait Runner<Part1 = usize, Part2 = usize>
@@ -127,7 +128,7 @@ pub(crate) mod helpers {
                 #[test]
                 fn part1() -> Result<()> {
                     let input = $input;
-                    println!("{:?}", input);
+                    println!("{}", input);
                     let input = Day::get_input(input)?;
                     println!("{:?}", input);
                     assert_eq!($part1, Day::part1(&input)?);
@@ -137,7 +138,7 @@ pub(crate) mod helpers {
                 #[test]
                 fn part2() -> Result<()> {
                     let input = $input;
-                    println!("{:?}", input);
+                    println!("{}", input);
                     let input = Day::get_input(input)?;
                     println!("{:?}", input);
                     assert_eq!($part2, Day::part2(&input)?);

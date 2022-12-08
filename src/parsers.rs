@@ -1,3 +1,5 @@
+use std::ops::RangeFrom;
+
 use heapless::Vec;
 use nom::{
     character::complete::{digit1, multispace0, one_of},
@@ -5,13 +7,15 @@ use nom::{
     error::{ErrorKind, ParseError},
     multi::many1,
     sequence::terminated,
-    AsChar, Err, IResult, InputLength, InputTakeAtPosition, Parser,
+    AsChar, Err, FindToken, IResult, InputIter, InputLength, InputTakeAtPosition, Parser, Slice,
 };
 
 use crate::utils::parse_int;
 
-#[allow(dead_code)]
-pub fn single_digit_line(input: &[u8]) -> IResult<&[u8], std::vec::Vec<usize>> {
+pub fn single_digit_line<'a, E>(input: &'a [u8]) -> IResult<&'a [u8], std::vec::Vec<usize>, E>
+where
+    E: ParseError<&'a [u8]>,
+{
     terminated(
         many1(map(one_of("0123456789"), |s| (s as u8 - b'0') as usize)),
         multispace0,
@@ -41,7 +45,9 @@ where
         Err(e) => Err(e),
         Ok((i1, o)) => {
             let mut acc = heapless::Vec::<_, N>::new();
-            acc.push(o).map_err(|_| panic!("vector not big enough")).unwrap();
+            acc.push(o)
+                .map_err(|_| panic!("vector not big enough"))
+                .unwrap();
             i = i1;
 
             loop {
@@ -56,8 +62,9 @@ where
                         }
 
                         i = i1;
-                        acc.push(o).map_err(|_| panic!("vector not big enough")).unwrap();
-
+                        acc.push(o)
+                            .map_err(|_| panic!("vector not big enough"))
+                            .unwrap();
                     }
                 }
             }

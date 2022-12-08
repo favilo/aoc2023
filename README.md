@@ -47,6 +47,14 @@ day06/get_input         time:   [1.1940 ns 1.2045 ns 1.2151 ns]
 day06/part1             time:   [4.1462 µs 4.1780 µs 4.2106 µs]
 day06/part2             time:   [6.1832 µs 6.2897 µs 6.4200 µs]
 
+day07/get_input         time:   [178.12 µs 179.59 µs 181.58 µs]
+day07/part1             time:   [17.368 µs 17.496 µs 17.646 µs]
+day07/part2             time:   [19.928 µs 20.190 µs 20.530 µs]
+
+day08/get_input         time:   [202.26 µs 205.49 µs 209.69 µs]
+day08/part1             time:   [863.33 µs 865.17 µs 867.44 µs]
+day08/part2             time:   [1.0570 ms 1.0590 ms 1.0614 ms]
+
 ```
 
 ## Original Timings
@@ -76,13 +84,21 @@ day06/get_input         time:   [69.029 ns 69.081 ns 69.135 ns]
 day06/part1             time:   [44.392 µs 44.491 µs 44.585 µs]
 day06/part2             time:   [201.74 µs 203.76 µs 206.72 µs]
 
+day07/get_input         time:   [180.59 µs 180.68 µs 180.77 µs]
+day07/part1             time:   [157.61 µs 157.81 µs 158.06 µs]
+day07/part2             time:   [180.45 µs 181.55 µs 183.00 µs]
+
+day08/get_input         time:   [202.26 µs 205.49 µs 209.69 µs]
+day08/part1             time:   [863.33 µs 865.17 µs 867.44 µs]
+day08/part2             time:   [1.0570 ms 1.0590 ms 1.0614 ms]
+
 ```
 
 ## Failed experiments
 
 ### Day 5
 
-Attempting to move all the stuff from Vec's to the stack with heapless ended up giving me the following worse timings: 
+Attempting to move all the stuff from Vec's to the stack with heapless ended up giving me the following worse timings:
 
 ```
 day05/get_input         time:   [31.051 µs 31.192 µs 31.307 µs]
@@ -95,4 +111,3 @@ day05/part2             time:   [10.931 µs 10.970 µs 11.023 µs]
                         change: [+92.267% +93.888% +95.383%] (p = 0.00 < 0.05)
                         Performance has regressed.
 ```
-

@@ -1,6 +1,6 @@
 use std::fs::read_to_string;
 
-use criterion::{criterion_group, criterion_main, Criterion, black_box};
+use criterion::{black_box, criterion_group, criterion_main, Criterion};
 
 use aoc2022::Runner;
 use pprof::{criterion::Output, flamegraph::Options};
@@ -42,7 +42,7 @@ macro_rules! benches {
     };
 }
 
-benches!(day01, day02, day03, day04, day05, day06,);
+benches!(day01, day02, day03, day04, day05, day06, day07, day08,);
 
 fn custom() -> Criterion {
     let mut options = Options::default();
