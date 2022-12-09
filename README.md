@@ -115,47 +115,6 @@ day09/part2             time:   [789.27 µs 791.95 µs 795.65 µs]
 
 ```
 
-## System Allocator Timings
-
-```
-day01/get_input         time:   [43.604 µs 43.731 µs 43.906 µs]
-day01/part1             time:   [1.1634 ns 1.1662 ns 1.1693 ns]
-day01/part2             time:   [2.6796 ns 2.6848 ns 2.6903 ns]
-
-day02/get_input         time:   [51.790 µs 51.953 µs 52.126 µs]
-day02/part1             time:   [7.5178 µs 7.5647 µs 7.6226 µs]
-day02/part2             time:   [14.886 µs 14.970 µs 15.085 µs]
-
-day03/get_input         time:   [27.765 µs 27.930 µs 28.129 µs]
-day03/part1             time:   [457.56 ns 459.16 ns 461.40 ns]
-day03/part2             time:   [216.41 ns 222.24 ns 232.58 ns]
-
-day04/get_input         time:   [61.826 µs 63.037 µs 64.460 µs]
-day04/part1             time:   [1.8978 µs 1.9409 µs 2.0004 µs]
-day04/part2             time:   [2.0602 µs 2.1320 µs 2.1998 µs]
-
-day05/get_input         time:   [19.999 µs 20.221 µs 20.468 µs]
-day05/part1             time:   [6.0702 µs 6.1162 µs 6.1735 µs]
-day05/part2             time:   [6.6191 µs 6.7431 µs 6.8672 µs]
-
-day06/get_input         time:   [1.1940 ns 1.2045 ns 1.2151 ns]
-day06/part1             time:   [4.1462 µs 4.1780 µs 4.2106 µs]
-day06/part2             time:   [6.1832 µs 6.2897 µs 6.4200 µs]
-
-day07/get_input         time:   [123.41 µs 123.69 µs 124.04 µs]
-day07/part1             time:   [17.759 µs 17.776 µs 17.796 µs]
-day07/part2             time:   [19.417 µs 19.475 µs 19.541 µs]
-
-day08/get_input         time:   [196.15 µs 198.41 µs 200.85 µs]
-day08/part1             time:   [41.989 µs 42.246 µs 42.560 µs]
-day08/part2             time:   [419.24 µs 423.74 µs 429.84 µs]
-
-day09/get_input         time:   [67.368 µs 67.439 µs 67.533 µs]
-day09/part1             time:   [489.55 µs 491.90 µs 494.48 µs]
-day09/part2             time:   [766.63 µs 776.74 µs 790.37 µs]
-
-```
-
 ## Original Timings
 
 ```
