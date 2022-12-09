@@ -1,10 +1,12 @@
 use std::{
+    cell::Cell,
     collections::{HashMap, HashSet},
     iter::once,
     str::FromStr,
 };
 
 use color_eyre::{eyre::eyre, Result};
+use itertools::Itertools;
 
 use crate::{utils::parse_int, Runner};
 
@@ -56,42 +58,13 @@ fn follow_once(h: (isize, isize), t: (isize, isize)) -> (isize, isize) {
     let (xh, yh) = h;
     let (xt, yt) = t;
 
+    let (dx, dy) = (xh - xt, yh - yt);
+
     if next_to(h, t) {
         return t;
     }
 
-    if yt == yh {
-        // horizontal
-        if xh - xt >= 2 {
-            (xt + 1, yt)
-        } else if xt - xh >= 2 {
-            (xt - 1, yt)
-        } else {
-            // Close enough, don't bother moving
-            t
-        }
-    } else if xt == xh {
-        // vertical
-        if yh - yt >= 2 {
-            (xt, yt + 1)
-        } else if yt - yh >= 2 {
-            (xt, yt - 1)
-        } else {
-            // Close enough, don't bother moving
-            t
-        }
-    } else {
-        // diagonal
-        if xh > xt && yh > yt {
-            (xt + 1, yt + 1)
-        } else if xh < xt && yh > yt {
-            (xt - 1, yt + 1)
-        } else if xh > xt && yh < yt {
-            (xt + 1, yt - 1)
-        } else {
-            (xt - 1, yt - 1)
-        }
-    }
+    (xt + dx.signum(), yt + dy.signum())
 }
 
 fn follow(
@@ -144,18 +117,14 @@ fn follow_chain(
     heads: impl IntoIterator<Item = (isize, isize)>,
     set: &mut HashSet<(isize, isize)>,
 ) {
-    let mut new_chain = *chain;
     heads.into_iter().for_each(|h| {
-        new_chain[0] = h;
         chain[0] = h;
-        let mut last_written = h;
-        chain[1..].iter().enumerate().for_each(|(j, t)| {
-            let h = last_written;
-            last_written = follow_once(h, *t);
-            new_chain[j] = last_written;
+        let cell = &Cell::from_mut(&mut chain[..]);
+        let slice_cell = cell.as_slice_of_cells();
+        slice_cell.iter().tuple_windows().for_each(|(h, t)| {
+            t.set(follow_once(h.get(), t.get()));
         });
         set.insert(chain[9]);
-        *chain = new_chain;
     });
 }
 
