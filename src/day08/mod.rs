@@ -1,9 +1,9 @@
-use std::iter::once;
-
 use bit_set::BitSet;
 use color_eyre::Result;
-use itertools::Itertools;
-use ndarray::{s, Array2};
+use ndarray::{
+    parallel::prelude::{IntoParallelIterator, ParallelIterator},
+    s, Array2, Zip,
+};
 use nom::{
     character::complete::multispace0, combinator::all_consuming, error::VerboseError, multi::many1,
     sequence::preceded, Finish,
@@ -39,35 +39,45 @@ impl Runner for Day {
         let (height, width) = input.dim();
         let mut set = BitSet::new();
         (0..height).into_iter().for_each(|j| {
-            [s![j, ..], s![j, ..;-1]].into_iter().for_each(|s| {
-                let mut max = None;
-                input.slice(s).indexed_iter().for_each(|(i, v)| {
-                    if max.is_none() || *v > max.unwrap() {
-                        set.insert(j * height + i);
-                        max = Some(*v);
-                    }
+            [s![j, ..], s![j, ..;-1]]
+                .into_iter()
+                .enumerate()
+                .for_each(|(idx, s)| {
+                    let mut max = -1;
+                    input.slice(s).indexed_iter().for_each(|(i, &v)| {
+                        let i = if idx == 1 { width - i - 1 } else { i };
+                        if v as isize > max {
+                            max = v as isize;
+                            set.insert(i * width + j);
+                        }
+                    });
                 });
-            });
         });
         (0..width).into_iter().for_each(|i| {
-            [s![.., i], s![..;-1, i]].into_iter().for_each(|s| {
-                let mut max = None;
-                input.slice(s).indexed_iter().for_each(|(j, v)| {
-                    if max.is_none() || *v > max.unwrap() {
-                        set.insert(j * height + i);
-                        max = Some(*v);
-                    }
+            [s![.., i], s![..;-1, i]]
+                .into_iter()
+                .enumerate()
+                .for_each(|(idx, s)| {
+                    let mut max = -1;
+                    input
+                        .slice(s)
+                        .indexed_iter()
+                        .for_each(|(j, &v): (usize, &usize)| {
+                            let j = if idx == 1 { height - j - 1 } else { j };
+                            if v as isize > max {
+                                max = v as isize;
+                                set.insert(i * width + j);
+                            }
+                        });
                 });
-            });
         });
 
         Ok(set.len())
     }
 
     fn part2(input: &Self::Input<'_>) -> Result<usize> {
-        Ok(input
-            .slice(s![1..-1, 1..-1])
-            .indexed_iter()
+        Ok(Zip::indexed(input)
+            .into_par_iter()
             .map(|(idx, e)| scenic_score(input, idx, *e))
             .max()
             .unwrap())

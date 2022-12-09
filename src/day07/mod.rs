@@ -95,20 +95,6 @@ fn command(input: &str) -> IResult<&str, Command, VerboseError<&str>> {
     delimited(tuple((multispace0, tag("$ "))), alt((ls, cd)), opt(newline))(input)
 }
 
-fn walk_dirs<F>(current: &Node<Entry>, tree: &Tree<Entry>, f: &mut F)
-where
-    F: FnMut(&Node<Entry>, &Tree<Entry>),
-{
-    current
-        .children()
-        .iter()
-        .map(|n| tree.get(n))
-        .flatten()
-        .filter(|n| n.data().is_dir())
-        .for_each(|n| walk_dirs(n, tree, f));
-    f(current, tree);
-}
-
 fn total_size(tree: &Tree<Entry>, node: &Node<Entry>) -> Result<usize> {
     Ok(node
         .children()
