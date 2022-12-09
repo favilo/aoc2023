@@ -27,7 +27,7 @@ impl Runner for Day {
         6
     }
 
-    fn get_input<'input>(input: &'input str) -> Result<Self::Input<'input>> {
+    fn get_input(input: &str) -> Result<Self::Input<'_>> {
         Ok(input)
     }
 
@@ -42,7 +42,7 @@ impl Runner for Day {
 
 fn get_index(input: &[u8], window_size: usize) -> usize {
     let mut set = input
-        .into_iter()
+        .iter()
         .take(window_size - 1)
         .fold(Set::default(), |set, &c| set.toggle(c));
     input

@@ -20,7 +20,7 @@ impl Runner for Day {
         8
     }
 
-    fn get_input<'input>(input: &'input str) -> Result<Self::Input<'input>> {
+    fn get_input(input: &str) -> Result<Self::Input<'_>> {
         let v = all_consuming::<_, _, VerboseError<_>, _>(many1(preceded(
             multispace0,
             single_digit_line,

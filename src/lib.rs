@@ -5,10 +5,7 @@ use std::{
     time::{Duration, Instant},
 };
 
-use color_eyre::{
-    eyre::{Context, ContextCompat},
-    Result,
-};
+use color_eyre::{eyre::Context, Result};
 use tracking_allocator::AllocationRegistry;
 
 use crate::utils::download_input;
@@ -109,7 +106,7 @@ where
         ""
     }
 
-    fn get_input<'input>(_: &'input str) -> Result<Self::Input<'input>>;
+    fn get_input(_: &str) -> Result<Self::Input<'_>>;
     fn part1(_: &Self::Input<'_>) -> Result<Part1>;
     fn part2(_: &Self::Input<'_>) -> Result<Part2>;
 }

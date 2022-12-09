@@ -46,7 +46,7 @@ impl Runner for Day {
         1
     }
 
-    fn get_input<'input>(input: &'input str) -> Result<Self::Input<'input>> {
+    fn get_input(input: &str) -> Result<Self::Input<'_>> {
         let nums = input
             .lines()
             .map(&str::trim)

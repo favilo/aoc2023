@@ -48,10 +48,6 @@ impl Movement {
     }
 }
 
-fn city_block_distance(h: (isize, isize), t: (isize, isize)) -> isize {
-    (h.0 - t.0).abs() + (h.1 - t.1).abs()
-}
-
 fn next_to(h: (isize, isize), t: (isize, isize)) -> bool {
     (h.0 - t.0).abs() < 2 && (h.1 - t.1).abs() < 2
 }
@@ -148,20 +144,16 @@ fn follow_chain(
     heads: impl IntoIterator<Item = (isize, isize)>,
     set: &mut HashSet<(isize, isize)>,
 ) {
-    let mut new_chain = chain.clone();
+    let mut new_chain = *chain;
     heads.into_iter().for_each(|h| {
         new_chain[0] = h;
         chain[0] = h;
         let mut last_written = h;
-        chain[1..]
-            .iter()
-            .enumerate()
-            .map(|(j, t)| ((j, chain[j]), (j + 1, t)))
-            .for_each(|((_, h), (j, t))| {
-                let h = last_written;
-                last_written = follow_once(h, *t);
-                new_chain[j] = last_written;
-            });
+        chain[1..].iter().enumerate().for_each(|(j, t)| {
+            let h = last_written;
+            last_written = follow_once(h, *t);
+            new_chain[j] = last_written;
+        });
         set.insert(chain[9]);
         *chain = new_chain;
     });
@@ -174,13 +166,12 @@ impl Runner for Day {
         9
     }
 
-    fn get_input<'input>(input: &'input str) -> Result<Self::Input<'input>> {
+    fn get_input(input: &str) -> Result<Self::Input<'_>> {
         Ok(input
             .lines()
             .filter(|l| !l.is_empty())
             .map(str::trim)
-            .map(|l| l.split_once(" "))
-            .flatten()
+            .filter_map(|l| l.split_once(' '))
             .map(|(d, m)| {
                 let d = d.parse().unwrap();
                 let m = parse_int(m.as_bytes()).try_into().unwrap();
@@ -194,7 +185,7 @@ impl Runner for Day {
         let mut tail: (isize, isize) = (0, 0);
         let mut set = HashSet::new();
 
-        input.into_iter().for_each(|m| {
+        input.iter().for_each(|m| {
             let heads = m.perform(head);
             (head, tail) = follow(heads, tail, &mut set);
         });
@@ -206,7 +197,7 @@ impl Runner for Day {
         let mut chain = [(0, 0); 10];
         let mut set = HashSet::new();
 
-        input.into_iter().for_each(|m| {
+        input.iter().for_each(|m| {
             let heads = m.perform(chain[0]);
 
             follow_chain(&mut chain, heads, &mut set);

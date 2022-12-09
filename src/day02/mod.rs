@@ -113,7 +113,7 @@ impl Runner for Day {
         2
     }
 
-    fn get_input<'input>(input: &'input str) -> Result<Self::Input<'input>> {
+    fn get_input(input: &str) -> Result<Self::Input<'_>> {
         Ok(input.lines().map(str::as_bytes).map(Round::from).collect())
     }
 

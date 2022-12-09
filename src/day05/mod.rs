@@ -33,7 +33,7 @@ pub struct Stacks {
 }
 
 fn container(input: &[u8]) -> IResult<&[u8], Crate, VerboseError<&[u8]>> {
-    map(delimited(tag("["), anychar, tag("]")), |c| Crate(c))(input)
+    map(delimited(tag("["), anychar, tag("]")), Crate)(input)
 }
 
 fn hole(input: &[u8]) -> IResult<&[u8], (), VerboseError<&[u8]>> {
@@ -118,7 +118,7 @@ impl Runner<String<9>, String<9>> for Day {
         5
     }
 
-    fn get_input<'input>(input: &'input str) -> Result<Self::Input<'input>> {
+    fn get_input(input: &str) -> Result<Self::Input<'_>> {
         let (_input, stacks) = all_consuming(stacks)(input.as_bytes())
             .finish()
             .map_err(|e| color_eyre::eyre::eyre!("{e:?}"))
@@ -134,7 +134,7 @@ impl Runner<String<9>, String<9>> for Day {
             .for_each(|&Instruction { num, from, to }| {
                 let mut to_stack = std::mem::take(&mut stacks[to]);
                 let new_len = stacks[from].len() - num;
-                let drained = stacks[from][new_len..].into_iter().copied();
+                let drained = stacks[from][new_len..].iter().copied();
                 to_stack.extend(drained.rev());
                 stacks[from].truncate(new_len);
                 let _ = std::mem::replace(&mut stacks[to], to_stack);
@@ -157,7 +157,7 @@ impl Runner<String<9>, String<9>> for Day {
                 // Not actually cloning data. Or it shouldn't be
                 let mut to_stack = std::mem::take(&mut stacks[to]);
                 let new_len = stacks[from].len() - num;
-                let drained = stacks[from][new_len..].into_iter().copied();
+                let drained = stacks[from][new_len..].iter().copied();
                 to_stack.extend(drained);
                 stacks[from].truncate(new_len);
                 let _ = std::mem::replace(&mut stacks[to], to_stack);
@@ -172,7 +172,7 @@ impl Runner<String<9>, String<9>> for Day {
 
 #[cfg(test)]
 mod tests {
-    use crate::helpers::{sample_case, prod_case};
+    use crate::helpers::{prod_case, sample_case};
 
     use super::*;
 

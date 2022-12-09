@@ -61,19 +61,19 @@ impl Runner for Day {
         4
     }
 
-    fn get_input<'input>(input: &'input str) -> Result<Self::Input<'input>> {
+    fn get_input(input: &str) -> Result<Self::Input<'_>> {
         Ok(pair_vec(input.as_bytes()).unwrap().1)
     }
 
     fn part1(input: &Self::Input<'_>) -> Result<usize> {
         Ok(input
             .iter()
-            .filter(|Pair(f, s)| f.inside_or_surrounding(&s))
+            .filter(|Pair(f, s)| f.inside_or_surrounding(s))
             .count())
     }
 
     fn part2(input: &Self::Input<'_>) -> Result<usize> {
-        Ok(input.iter().filter(|Pair(f, s)| f.overlaps(&s)).count())
+        Ok(input.iter().filter(|Pair(f, s)| f.overlaps(s)).count())
     }
 }
 

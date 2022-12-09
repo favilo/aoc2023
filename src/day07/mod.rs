@@ -15,13 +15,13 @@ use crate::{parsers::number, Runner};
 
 pub struct Day;
 
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum EntryType {
     Dir,
     File,
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Entry<'input> {
     t: EntryType,
     name: &'input str,
@@ -42,7 +42,7 @@ impl Entry<'_> {
     }
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Command<'input> {
     Cd(&'input str),
     Ls(Vec<Entry<'input>>),
@@ -51,7 +51,7 @@ pub enum Command<'input> {
 fn cd(input: &str) -> IResult<&str, Command, VerboseError<&str>> {
     delimited(
         tag("cd "),
-        map(not_line_ending::<&str, _>, |name| Command::Cd(name.into())),
+        map(not_line_ending::<&str, _>, Command::Cd),
         newline,
     )(input)
 }
@@ -96,8 +96,7 @@ fn total_size(tree: &Tree<Entry>, node: &Node<Entry>) -> Result<usize> {
     Ok(node
         .children()
         .iter()
-        .map(|c| total_size(tree, tree.get(c).unwrap()).ok())
-        .flatten()
+        .filter_map(|c| total_size(tree, tree.get(c).unwrap()).ok())
         .sum::<usize>()
         + node.data().size)
 }
@@ -109,7 +108,7 @@ impl Runner for Day {
         7
     }
 
-    fn get_input<'input>(input: &'input str) -> Result<Self::Input<'input>> {
+    fn get_input(input: &str) -> Result<Self::Input<'_>> {
         let (_, lines) = all_consuming(many1(command))(input).finish().unwrap();
         let mut tree = Tree::new();
         walk_commands(lines, &mut tree)?;
@@ -146,7 +145,7 @@ fn walk_commands<'input>(
     input: Vec<Command<'input>>,
     tree: &'_ mut Tree<Entry<'input>>,
 ) -> Result<()> {
-    assert_eq!(input[0], Command::Cd("/".into()));
+    assert_eq!(input[0], Command::Cd("/"));
 
     let root = tree.insert(Node::new(Entry::root()), InsertBehavior::AsRoot)?;
 

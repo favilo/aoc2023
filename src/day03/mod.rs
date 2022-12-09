@@ -115,7 +115,7 @@ impl Runner for Day {
         3
     }
 
-    fn get_input<'input>(input: &'input str) -> Result<Self::Input<'input>> {
+    fn get_input(input: &str) -> Result<Self::Input<'_>> {
         Ok(input
             .lines()
             .map(|line| {
