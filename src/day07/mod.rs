@@ -152,21 +152,22 @@ fn walk_commands<'input>(
 
     let mut current = root.clone();
 
-    for command in input.into_iter().skip(1) {
-        // let first_child_idx: usize = tree.dirs.len();
+    input.into_iter().skip(1).for_each(|command| {
         match command {
             Command::Cd(path) => match path {
                 "/" => current = root.clone(),
-                ".." => current = tree.get(&current)?.parent().unwrap().clone(),
+                ".." => current = tree.get(&current).unwrap().parent().unwrap().clone(),
                 path => {
-                    current = tree.insert(
-                        Node::new(Entry {
-                            t: EntryType::Dir,
-                            name: path,
-                            size: 0,
-                        }),
-                        InsertBehavior::UnderNode(&current),
-                    )?;
+                    current = tree
+                        .insert(
+                            Node::new(Entry {
+                                t: EntryType::Dir,
+                                name: path,
+                                size: 0,
+                            }),
+                            InsertBehavior::UnderNode(&current),
+                        )
+                        .unwrap();
                 }
             },
             Command::Ls(entries) => {
@@ -180,7 +181,7 @@ fn walk_commands<'input>(
                     });
             }
         };
-    }
+    });
     Ok(())
 }
 
