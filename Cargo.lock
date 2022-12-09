@@ -47,6 +47,7 @@ dependencies = [
  "clap 4.0.29",
  "color-eyre",
  "criterion",
+ "dotenv",
  "fern",
  "hash32",
  "hash32-derive",
@@ -492,6 +493,12 @@ checksum = "d6ee87af31d84ef885378aebca32be3d682b0e0dc119d5b4860a2c5bb5046730"
 dependencies = [
  "uuid",
 ]
+
+[[package]]
+name = "dotenv"
+version = "0.15.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "77c90badedccf4105eca100756a0b1289e191f6fcbdadd3cee1d2f614f97da8f"
 
 [[package]]
 name = "either"

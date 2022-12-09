@@ -70,10 +70,8 @@ where
         log::info!("Day {}{}\n", Self::day(), comment);
         let input_path = format!("input/{}/day{:02}.txt", YEAR, Self::day());
         if !Path::new(&input_path).exists() {
-            let session_file = home::home_dir()
-                .wrap_err("home doesn't exist")?
-                .join(".aocsession");
-            let session = read_to_string(&session_file).wrap_err("reading .aocsession file")?;
+            dotenv::dotenv().wrap_err("loading .env file")?;
+            let session = std::env::var("AOCSESSION").wrap_err("looking for AOCSESSION env var")?;
             download_input(Self::day(), YEAR, &session, &input_path)?;
         }
         let input = read_to_string(input_path)?;

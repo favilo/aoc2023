@@ -14,6 +14,7 @@ byte_set = "0.1.3"
 chrono = "0.4.23"
 clap = { version = "4.0.29", features = ["derive"] }
 color-eyre = "0.6.2"
+dotenv = "0.15.0"
 fern = { version = "0.6.1", features = ["colored"] }
 hash32 = "0.2.1"
 hash32-derive = "0.1.1"
