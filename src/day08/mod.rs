@@ -1,5 +1,6 @@
 use std::iter::once;
 
+use bit_set::BitSet;
 use color_eyre::Result;
 use itertools::Itertools;
 use ndarray::{s, Array2};
@@ -35,14 +36,37 @@ impl Runner for Day {
     }
 
     fn part1(input: &Self::Input<'_>) -> Result<usize> {
-        Ok(input
-            .indexed_iter()
-            .filter(|(idx, e)| is_visible(input, *idx, **e))
-            .count())
+        let (height, width) = input.dim();
+        let mut set = BitSet::new();
+        (0..height).into_iter().for_each(|j| {
+            [s![j, ..], s![j, ..;-1]].into_iter().for_each(|s| {
+                let mut max = None;
+                input.slice(s).indexed_iter().for_each(|(i, v)| {
+                    if max.is_none() || *v > max.unwrap() {
+                        set.insert(j * height + i);
+                        max = Some(*v);
+                    }
+                });
+            });
+        });
+        (0..width).into_iter().for_each(|i| {
+            [s![.., i], s![..;-1, i]].into_iter().for_each(|s| {
+                let mut max = None;
+                input.slice(s).indexed_iter().for_each(|(j, v)| {
+                    if max.is_none() || *v > max.unwrap() {
+                        set.insert(j * height + i);
+                        max = Some(*v);
+                    }
+                });
+            });
+        });
+
+        Ok(set.len())
     }
 
     fn part2(input: &Self::Input<'_>) -> Result<usize> {
         Ok(input
+            .slice(s![1..-1, 1..-1])
             .indexed_iter()
             .map(|(idx, e)| scenic_score(input, idx, *e))
             .max()
@@ -50,19 +74,9 @@ impl Runner for Day {
     }
 }
 
-fn is_visible(array: &Array2<usize>, idx: (usize, usize), e: usize) -> bool {
-    let (row, col) = idx;
-    [
-        s![..row, col],
-        s![row + 1.., col],
-        s![row, ..col],
-        s![row, col + 1..],
-    ]
-    .into_iter()
-    .any(|i| array.slice(i).iter().all(|v| *v < e))
-}
-
 fn scenic_score(array: &Array2<usize>, idx: (usize, usize), e: usize) -> usize {
+    // TODO: I can see the shape of an algorithm that builds up the counts the same way
+    // part1 did, but I'm not feeling motivated to implement it right now
     let (row, col) = idx;
     [
         s![..row;-1, col],
