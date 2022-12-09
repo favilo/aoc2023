@@ -63,6 +63,8 @@ day09/part2             time:   [789.27 µs 791.95 µs 795.65 µs]
 
 ## Original Timings
 
+<details>
+    <summary>Expand</summary>
 ```
 day01/get_input         time:   [86.597 µs 86.773 µs 86.980 µs]
 day01/part1             time:   [811.66 ns 813.55 ns 815.58 ns]
@@ -101,6 +103,7 @@ day09/part1             time:   [494.95 µs 497.91 µs 501.22 µs]
 day09/part2             time:   [735.51 µs 747.46 µs 762.90 µs]
 
 ```
+</details>
 
 ## Failed experiments
 
