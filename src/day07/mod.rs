@@ -22,17 +22,17 @@ pub enum EntryType {
 }
 
 #[derive(Debug, Clone, PartialEq)]
-pub struct Entry {
+pub struct Entry<'input> {
     t: EntryType,
-    name: String,
+    name: &'input str,
     size: usize,
 }
 
-impl Entry {
+impl Entry<'_> {
     fn root() -> Self {
         Self {
             t: EntryType::Dir,
-            name: "/".into(),
+            name: "/",
             size: 0,
         }
     }
@@ -43,9 +43,9 @@ impl Entry {
 }
 
 #[derive(Debug, Clone, PartialEq)]
-pub enum Command {
-    Cd(String),
-    Ls(Vec<Entry>),
+pub enum Command<'input> {
+    Cd(&'input str),
+    Ls(Vec<Entry<'input>>),
 }
 
 fn cd(input: &str) -> IResult<&str, Command, VerboseError<&str>> {
@@ -59,13 +59,10 @@ fn cd(input: &str) -> IResult<&str, Command, VerboseError<&str>> {
 fn dir(input: &str) -> IResult<&str, Entry, VerboseError<&str>> {
     map(
         tuple((tag("dir "), not_line_ending::<&str, _>)),
-        |(_, name)| {
-            Entry {
-                t: EntryType::Dir,
-                name: name.to_owned(),
-                size: 0,
-                // To be filled by walking
-            }
+        |(_, name)| Entry {
+            t: EntryType::Dir,
+            name,
+            size: 0,
         },
     )(input)
 }
@@ -75,7 +72,7 @@ fn file(input: &str) -> IResult<&str, Entry, VerboseError<&str>> {
         tuple((number::<&str, _>, tag(" "), not_line_ending)),
         |(size, _, name)| Entry {
             t: EntryType::File,
-            name: name.to_owned(),
+            name,
             size,
         },
     )(input)
@@ -106,7 +103,7 @@ fn total_size(tree: &Tree<Entry>, node: &Node<Entry>) -> Result<usize> {
 }
 
 impl Runner for Day {
-    type Input<'input> = Tree<Entry>;
+    type Input<'input> = Tree<Entry<'input>>;
 
     fn day() -> usize {
         7
@@ -145,7 +142,10 @@ impl Runner for Day {
     }
 }
 
-fn walk_commands(input: Vec<Command>, tree: &mut Tree<Entry>) -> Result<()> {
+fn walk_commands<'input>(
+    input: Vec<Command<'input>>,
+    tree: &'_ mut Tree<Entry<'input>>,
+) -> Result<()> {
     assert_eq!(input[0], Command::Cd("/".into()));
 
     let root = tree.insert(Node::new(Entry::root()), InsertBehavior::AsRoot)?;
@@ -155,14 +155,14 @@ fn walk_commands(input: Vec<Command>, tree: &mut Tree<Entry>) -> Result<()> {
     for command in input.into_iter().skip(1) {
         // let first_child_idx: usize = tree.dirs.len();
         match command {
-            Command::Cd(path) => match path.as_str() {
+            Command::Cd(path) => match path {
                 "/" => current = root.clone(),
                 ".." => current = tree.get(&current)?.parent().unwrap().clone(),
                 path => {
                     current = tree.insert(
                         Node::new(Entry {
                             t: EntryType::Dir,
-                            name: path.to_owned(),
+                            name: path,
                             size: 0,
                         }),
                         InsertBehavior::UnderNode(&current),
