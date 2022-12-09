@@ -156,9 +156,9 @@ impl Runner for Day {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::helpers::sample_case;
+    use crate::helpers::{sample_case, prod_case};
 
-    sample_case!{
+    sample_case! {
         sample1 => input = "\
             vJrwpWtwJgWrhcsFMMfFFhFp
             jqHRNqRjqzjGDLGLrsFMfFZSrLrFZsSL
@@ -175,5 +175,10 @@ mod tests {
         assert_eq!(Priority::from_ascii_branchless(b'a'), Priority(1));
         assert_eq!(Priority::from_ascii_branchless(b'A'), Priority(27));
         Ok(())
+    }
+
+    prod_case! {
+        part1 = 7763;
+        part2 = 2569;
     }
 }

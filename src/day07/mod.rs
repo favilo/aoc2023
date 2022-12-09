@@ -188,7 +188,7 @@ fn walk_commands<'input>(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::helpers::sample_case;
+    use crate::helpers::{prod_case, sample_case};
 
     sample_case! {
         sample1 =>
@@ -218,5 +218,10 @@ mod tests {
                     7214296 k";
             part1 = 95437;
             part2 = 24933642;
+    }
+
+    prod_case! {
+        part1 = 1232307;
+        part2 = 7268994;
     }
 }

@@ -61,7 +61,7 @@ fn get_index(input: &[u8], window_size: usize) -> usize {
 
 #[cfg(test)]
 mod tests {
-    use crate::helpers::sample_case;
+    use crate::helpers::{sample_case, prod_case};
 
     use super::*;
 
@@ -84,5 +84,10 @@ mod tests {
             input = "nppdvjthqldpwncqszvftbrmjlhg";
             part1 = 6;
             part2 = 23;
+    }
+
+    prod_case!{
+        part1 = 1779;
+        part2 = 2635;
     }
 }

@@ -80,7 +80,7 @@ impl Runner for Day {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::helpers::sample_case;
+    use crate::helpers::{prod_case, sample_case};
 
     sample_case! {
         sample1 =>
@@ -93,5 +93,10 @@ mod tests {
             2-6,4-8";
         part1 = 2;
         part2 = 4;
+    }
+
+    prod_case! {
+        part1 = 483;
+        part2 = 874;
     }
 }

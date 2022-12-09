@@ -142,6 +142,8 @@ impl Runner for Day {
 
 #[cfg(test)]
 mod tests {
+    use crate::helpers::prod_case;
+
     use super::*;
 
     #[test]
@@ -156,5 +158,10 @@ mod tests {
         assert_eq!(15, Day::part1(&input)?);
         assert_eq!(12, Day::part2(&input)?);
         Ok(())
+    }
+
+    prod_case! {
+        part1 = 14297;
+        part2 = 10498;
     }
 }

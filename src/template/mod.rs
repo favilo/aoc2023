@@ -27,12 +27,17 @@ impl Runner for Day {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::helpers::sample_case;
+    use crate::helpers::{prod_case, sample_case};
 
     sample_case! {
         sample1 =>
             input = "mjqjpqmgbljsphdztnvjfqwrcgsmlb";
             part1 = 7;
             part2 = 19;
+    }
+
+    prod_case! {
+        part1 = 1681;
+        part2 = 201684;
     }
 }

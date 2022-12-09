@@ -110,7 +110,7 @@ fn scenic_score(array: &Array2<usize>, idx: (usize, usize), e: usize) -> usize {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::helpers::sample_case;
+    use crate::helpers::{sample_case, prod_case};
 
     sample_case! {
         sample1 =>
@@ -122,5 +122,10 @@ mod tests {
                 35390";
             part1 = 21;
             part2 = 8;
+    }
+
+    prod_case! {
+        part1 = 1681;
+        part2 = 201684;
     }
 }

@@ -1,6 +1,3 @@
-// #![feature(box_patterns, box_syntax)]
-// #![feature(box_syntax)]
-
 use std::{
     fmt::Debug,
     fs::read_to_string,
@@ -19,7 +16,7 @@ use crate::utils::download_input;
 mod parsers;
 mod utils;
 
-const YEAR: usize = 2022;
+pub const YEAR: usize = 2022;
 
 macro_rules! run_days {
     ($day:ident = $id:expr, $($days:ident = $ids:expr),* $(,)?) => {
@@ -148,5 +145,33 @@ pub(crate) mod helpers {
         };
     }
 
+    macro_rules! prod_case {
+        (part1 = $part1:expr; part2 = $part2:expr;) => {
+            mod prod_tests {
+                use super::*;
+                use std::fs::read_to_string;
+
+                #[test]
+                fn part1() -> Result<()> {
+                    let input_path = format!("input/{}/day{:02}.txt", crate::YEAR, Day::day());
+                    let input = read_to_string(input_path)?;
+                    let input = Day::get_input(&input)?;
+                    assert_eq!($part1, Day::part1(&input)?);
+                    Ok(())
+                }
+
+                #[test]
+                fn part2() -> Result<()> {
+                    let input_path = format!("input/{}/day{:02}.txt", crate::YEAR, Day::day());
+                    let input = read_to_string(input_path)?;
+                    let input = Day::get_input(&input)?;
+                    assert_eq!($part2, Day::part2(&input)?);
+                    Ok(())
+                }
+            }
+        };
+    }
+
+    pub(crate) use prod_case;
     pub(crate) use sample_case;
 }

@@ -172,7 +172,7 @@ impl Runner<String<9>, String<9>> for Day {
 
 #[cfg(test)]
 mod tests {
-    use crate::helpers::sample_case;
+    use crate::helpers::{sample_case, prod_case};
 
     use super::*;
 
@@ -189,5 +189,10 @@ move 2 from 2 to 1
 move 1 from 1 to 2";
         part1 = "CMZ";
         part2 = "MCD";
+    }
+
+    prod_case! {
+        part1 = "CFFHVVHNC";
+        part2 = "FSZWBPTBG";
     }
 }
