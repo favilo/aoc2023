@@ -3,11 +3,11 @@ use std::sync::atomic::AtomicBool;
 use clap::{ArgAction, Parser};
 use color_eyre::Result;
 use fern::colors::{Color, ColoredLevelConfig};
-use tracking_allocator::{AllocationGroupId, AllocationRegistry, AllocationTracker};
+use mimalloc::MiMalloc;
+use tracking_allocator::{AllocationGroupId, AllocationRegistry, AllocationTracker, Allocator};
 
 #[global_allocator]
-static GLOBAL: tracking_allocator::Allocator<std::alloc::System> =
-    tracking_allocator::Allocator::system();
+static GLOBAL: Allocator<MiMalloc> = Allocator::from_allocator(MiMalloc);
 
 static PANIC_ON_ALLOCATE: AtomicBool = AtomicBool::new(false);
 

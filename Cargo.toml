@@ -23,6 +23,7 @@ home = "0.5.4"
 id_tree = "1.8.0"
 itertools = "0.10.5"
 log = "0.4.17"
+mimalloc = "0.1.32"
 multiset = "0.0.5"
 ndarray = { version = "0.15.6", features = ["rayon"] }
 nom = "7.1.1"
