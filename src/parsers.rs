@@ -1,11 +1,12 @@
 use heapless::Vec;
 use nom::{
-    character::complete::{digit1, multispace0, one_of},
-    combinator::map,
+    bytes::complete::{is_a, tag},
+    character::complete::{char, digit1, multispace0, one_of},
+    combinator::{map, opt},
     error::{ErrorKind, ParseError},
     multi::many1,
-    sequence::terminated,
-    AsChar, Err, IResult, InputLength, InputTakeAtPosition, Parser,
+    sequence::{terminated, tuple},
+    AsBytes, AsChar, Err, IResult, InputLength, InputTakeAtPosition, Parser,
 };
 
 use crate::utils::parse_int;
@@ -22,11 +23,28 @@ where
 
 pub fn number<S, E>(input: S) -> IResult<S, usize, E>
 where
-    S: AsRef<[u8]> + Clone + InputTakeAtPosition,
+    S: AsBytes + Clone + InputTakeAtPosition,
     E: ParseError<S>,
     <S as InputTakeAtPosition>::Item: AsChar,
 {
-    map(digit1, |d: S| parse_int(d.as_ref()))(input)
+    map(digit1, |d: S| parse_int(d.as_bytes()))(input)
+}
+
+pub fn signed_number<'input, E>(input: &'input [u8]) -> IResult<&'input [u8], isize, E>
+where
+    E: ParseError<&'input [u8]>,
+{
+    map(
+        tuple((opt(tag(b"-")), digit1)),
+        |(s, d): (Option<&[u8]>, &[u8])| {
+            let parsed = parse_int(d.as_bytes()) as isize;
+            if s.is_some() {
+                -parsed as isize
+            } else {
+                parsed
+            }
+        },
+    )(input)
 }
 
 #[allow(dead_code)]
