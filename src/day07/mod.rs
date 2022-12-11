@@ -69,7 +69,7 @@ fn dir(input: &str) -> IResult<&str, Entry, VerboseError<&str>> {
 
 fn file(input: &str) -> IResult<&str, Entry, VerboseError<&str>> {
     map(
-        tuple((number::<&str, _>, tag(" "), not_line_ending)),
+        tuple((number::<&str, usize, _>, tag(" "), not_line_ending)),
         |(size, _, name)| Entry {
             t: EntryType::File,
             name,

@@ -31,7 +31,7 @@ pub enum ModifiedInstruction {
 
 impl ModifiedInstruction {
     pub fn transform(inst: &[Instruction]) -> Vec<Self> {
-        inst.into_iter()
+        inst.iter()
             .flat_map(|&i| match i {
                 Instruction::Noop => vec![Self::Noop],
                 Instruction::AddX(a) => vec![Self::Pause, Self::AddX(a)],
@@ -62,48 +62,38 @@ impl<'input> Program<'input> {
         Self { instructions }
     }
 
-    pub fn cycles_iter<'s>(&'s mut self) -> impl Iterator<Item = isize> + 's {
+    pub fn cycles_iter(&mut self) -> impl Iterator<Item = isize> + '_ {
         let mut x = 1;
-        once(x).chain(
-            self.instructions
-                .iter()
-                .map(move |i| match i {
-                    Instruction::Noop => vec![x],
-                    Instruction::AddX(addend) => {
-                        let a = vec![x, x + addend];
-                        x += addend;
-                        a
-                    }
-                })
-                .flatten(),
-        )
+        once(x).chain(self.instructions.iter().flat_map(move |i| match i {
+            Instruction::Noop => vec![x],
+            Instruction::AddX(addend) => {
+                let a = vec![x, x + addend];
+                x += addend;
+                a
+            }
+        }))
     }
 
-    pub fn inst_iter<'s>(&'s mut self) -> impl Iterator<Item = Instruction> + 's {
-        once(Instruction::Noop).chain(
-            self.instructions
-                .iter()
-                .map(move |&i| match i {
-                    Instruction::Noop => {
-                        vec![i]
-                    }
-                    Instruction::AddX(_) => {
-                        vec![i, i]
-                    }
-                })
-                .flatten(),
-        )
+    pub fn inst_iter(&mut self) -> impl Iterator<Item = Instruction> + '_ {
+        once(Instruction::Noop).chain(self.instructions.iter().flat_map(move |&i| match i {
+            Instruction::Noop => {
+                vec![i]
+            }
+            Instruction::AddX(_) => {
+                vec![i, i]
+            }
+        }))
     }
 }
 
-impl Runner<isize, String> for Day {
+impl Runner<isize, ()> for Day {
     type Input<'input> = Vec<Instruction>;
 
     fn day() -> usize {
         10
     }
 
-    fn get_input<'input>(input: &'input str) -> Result<Self::Input<'input>> {
+    fn get_input(input: &str) -> Result<Self::Input<'_>> {
         Ok(input
             .lines()
             .map(|l| instruction(l.as_ref()).unwrap().1)
@@ -120,29 +110,29 @@ impl Runner<isize, String> for Day {
         Ok(sum)
     }
 
-    fn part2(input: &Self::Input<'_>) -> Result<String> {
+    fn part2(input: &Self::Input<'_>) -> Result<()> {
         let input = ModifiedInstruction::transform(input);
         let mut cycle = 0;
         let mut sprite = 1;
         let mut screen = String::new();
         assert_eq!(input.len(), 240);
         for inst in input {
-            print!("Sprite position: ");
-            for i in 0..40 {
-                print!(
-                    "{}",
-                    if i <= sprite + 1 && i >= sprite - 1 {
-                        "#"
-                    } else {
-                        "."
-                    }
-                );
-            }
-            println!("\n");
+            // print!("Sprite position: ");
+            // for i in 0..40 {
+            //     print!(
+            //         "{}",
+            //         if i <= sprite + 1 && i >= sprite - 1 {
+            //             "#"
+            //         } else {
+            //             "."
+            //         }
+            //     );
+            // }
+            // println!("\n");
 
             // 1. Cycle starts
             cycle += 1;
-            println!("Start cycle {cycle:2}: begin executing {inst:?}");
+            // println!("Start cycle {cycle:2}: begin executing {inst:?}");
             let x_pos = (cycle % 40) - 1;
 
             // 2. Pixel is drawn
@@ -162,8 +152,8 @@ impl Runner<isize, String> for Day {
             }
         }
 
-        println!("{}", screen);
-        Ok(screen)
+        // println!("{}", screen);
+        Ok(())
     }
 }
 
@@ -173,8 +163,8 @@ mod tests {
     use crate::helpers::{prod_case, sample_case};
 
     sample_case! {
-        sample1 =>
-            input = "addx 15
+    sample1 =>
+        input = "addx 15
                     addx -11
                     addx 6
                     addx -3
@@ -320,18 +310,12 @@ mod tests {
                     noop
                     noop
                     noop";
-            part1 = 13140;
-            part2 = "##..##..##..##..##..##..##..##..##..##..
-###...###...###...###...###...###...###.
-####....####....####....####....####....
-#####.....#####.....#####.....#####.....
-######......######......######......####
-#######.......#######.......#######.....
-".to_string();
+        part1 = 13140;
+        part2 = ();
     }
 
     prod_case! {
-        part1 = 1681;
-        part2 = "".to_string();
+        part1 = 13060;
+        part2 = ();
     }
 }

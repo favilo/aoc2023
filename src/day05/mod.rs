@@ -60,8 +60,8 @@ fn instruction(input: &[u8]) -> IResult<&[u8], Instruction, VerboseError<&[u8]>>
     let (input, (num, from, to)) = terminated(
         tuple((
             preceded(tag("move "), number),
-            preceded(tag(" from "), number),
-            preceded(tag(" to "), number),
+            preceded(tag(" from "), number::<_, usize, _>),
+            preceded(tag(" to "), number::<_, usize, _>),
         )),
         opt(newline),
     )(input)?;

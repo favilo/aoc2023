@@ -1,7 +1,9 @@
+use std::fmt::Debug;
+
 use heapless::Vec;
 use nom::{
-    bytes::complete::{is_a, tag},
-    character::complete::{char, digit1, multispace0, one_of},
+    bytes::complete::tag,
+    character::complete::{digit1, multispace0, one_of},
     combinator::{map, opt},
     error::{ErrorKind, ParseError},
     multi::many1,
@@ -21,13 +23,15 @@ where
     )(input)
 }
 
-pub fn number<S, E>(input: S) -> IResult<S, usize, E>
+pub fn number<S, U, E>(input: S) -> IResult<S, U, E>
 where
     S: AsBytes + Clone + InputTakeAtPosition,
+    U: TryFrom<usize>,
     E: ParseError<S>,
     <S as InputTakeAtPosition>::Item: AsChar,
+    <U as TryFrom<usize>>::Error: Debug,
 {
-    map(digit1, |d: S| parse_int(d.as_bytes()))(input)
+    map(digit1, |d: S| U::try_from(parse_int(d.as_bytes())).unwrap())(input)
 }
 
 pub fn signed_number<'input, E>(input: &'input [u8]) -> IResult<&'input [u8], isize, E>

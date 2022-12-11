@@ -11,7 +11,7 @@ impl Runner for Day {
         0 // FIXME
     }
 
-    fn get_input<'input>(input: &'input str) -> Result<Self::Input<'input>> {
+    fn get_input(input: &str) -> Result<Self::Input<'_>> {
         todo!()
     }
 
