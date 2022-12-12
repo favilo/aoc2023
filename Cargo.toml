@@ -28,6 +28,7 @@ multiset = "0.0.5"
 ndarray = { version = "0.15.6", features = ["rayon"] }
 nom = "7.1.1"
 num = "0.4.0"
+petgraph = "0.6.2"
 reqwest = { version = "0.11.13", features = ["blocking"] }
 tracking-allocator = "0.4.0"
 

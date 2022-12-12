@@ -67,12 +67,17 @@ day11/get_input         time:   [2.9862 µs 2.9881 µs 2.9906 µs]
 day11/part1             time:   [41.953 µs 42.287 µs 42.753 µs]
 day11/part2             time:   [24.054 ms 24.120 ms 24.194 ms]
 
+day12/get_input         time:   [287.37 µs 290.74 µs 294.64 µs]
+day12/part1             time:   [378.97 µs 381.00 µs 383.34 µs]
+day12/part2             time:   [334.06 µs 336.03 µs 338.27 µs]
+
 ```
 
 ## Original Timings
 
 <details>
     <summary>Expand</summary>
+
 ```
 day01/get_input         time:   [86.597 µs 86.773 µs 86.980 µs]
 day01/part1             time:   [811.66 ns 813.55 ns 815.58 ns]
@@ -118,7 +123,12 @@ day11/get_input         time:   [2.9862 µs 2.9881 µs 2.9906 µs]
 day11/part1             time:   [41.953 µs 42.287 µs 42.753 µs]
 day11/part2             time:   [24.054 ms 24.120 ms 24.194 ms]
 
+day12/get_input         time:   [287.37 µs 290.74 µs 294.64 µs]
+day12/part1             time:   [378.97 µs 381.00 µs 383.34 µs]
+day12/part2             time:   [334.06 µs 336.03 µs 338.27 µs]
+
 ```
+
 </details>
 
 ## Failed experiments
