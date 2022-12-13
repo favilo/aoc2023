@@ -14,7 +14,7 @@ use nom::{
 };
 use num::Integer;
 
-use crate::{parsers::number, Runner};
+use crate::{parsers::number, utils::top::TopK, Runner};
 
 pub struct Day;
 
@@ -235,15 +235,9 @@ impl Runner for Day {
         let mut monkeys = input.clone();
         (1..=20).for_each(|_| {
             do_round(&mut monkeys);
-            // println!("After round {i}:");
-            // monkeys
-            //     .iter()
-            //     .flatten()
-            //     .for_each(|m| println!("Monkey {}: {:?}", m.id, m.items))
         });
-        // monkeys.iter().flatten().for_each(|m| println!("{m:?}"));
-        monkeys.sort_by_key(|m| Reverse(m.as_ref().unwrap().touched));
-        Ok(monkeys[0].as_ref().unwrap().touched * monkeys[1].as_ref().unwrap().touched)
+        let top = TopK::<usize, 2>::from_iter(monkeys.iter().map(|m| m.as_ref().unwrap().touched));
+        Ok(top.into_iter().product())
     }
 
     fn part2(input: &Self::Input<'_>) -> Result<usize> {
@@ -254,15 +248,9 @@ impl Runner for Day {
             .fold(1, |acc, m| acc.lcm(&(m.test)));
         (1..=10_000).for_each(|_| {
             do_round2(&mut monkeys, modulus);
-            // println!("After round {i}:");
-            // monkeys
-            //     .iter()
-            //     .flatten()
-            //     .for_each(|m| println!("Monkey {}: {:?}", m.id, m.items))
         });
-        // monkeys.iter().flatten().for_each(|m| println!("{m:?}"));
-        monkeys.sort_by_key(|m| Reverse(m.as_ref().unwrap().touched));
-        Ok(monkeys[0].as_ref().unwrap().touched * monkeys[1].as_ref().unwrap().touched)
+        let top = TopK::<usize, 2>::from_iter(monkeys.iter().map(|m| m.as_ref().unwrap().touched));
+        Ok(top.into_iter().product())
     }
 }
 

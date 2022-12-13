@@ -5,42 +5,12 @@ use heapless::{
 };
 use itertools::Itertools;
 
-use crate::{utils::parse_int, Runner};
+use crate::{utils::{parse_int, top::TopK}, Runner};
 
 pub struct Day;
 
-// Do something silly to see if I can get this faster
-#[derive(Default, Clone, Debug)]
-pub struct Top3(BinaryHeap<usize, Max, 3>);
-
-impl FromIterator<usize> for Top3 {
-    fn from_iter<T: IntoIterator<Item = usize>>(iter: T) -> Self {
-        let mut this = BinaryHeap::<usize, Min, 4>::new();
-        iter.into_iter().for_each(|i| {
-            this.push(i).unwrap();
-            if this.len() > 3 {
-                this.pop();
-            }
-        });
-        let mut new = BinaryHeap::<_, Max, 3>::new();
-        (0..3).for_each(|_| {
-            new.push(this.pop().unwrap_or(0)).unwrap();
-        });
-        Self(new)
-    }
-}
-
-impl<'a> IntoIterator for &'a Top3 {
-    type Item = &'a usize;
-    type IntoIter = std::slice::Iter<'a, usize>;
-
-    fn into_iter(self) -> Self::IntoIter {
-        self.0.into_iter()
-    }
-}
-
 impl Runner for Day {
-    type Input<'input> = Top3;
+    type Input<'input> = TopK<usize, 3>;
 
     fn day() -> usize {
         1

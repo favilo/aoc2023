@@ -1,3 +1,5 @@
+pub(crate) mod top;
+
 use std::{fs::OpenOptions, io::Write};
 
 use color_eyre::{eyre::eyre, Result};
