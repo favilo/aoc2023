@@ -1,3 +1,5 @@
+#![feature(associated_type_defaults)]
+#![feature(associated_type_bounds)]
 use std::{
     fmt::Debug,
     fs::read_to_string,

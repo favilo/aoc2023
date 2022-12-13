@@ -10,8 +10,24 @@ use nom::{
     sequence::{terminated, tuple},
     AsBytes, AsChar, Err, IResult, InputLength, InputTakeAtPosition, Parser,
 };
+use nom_locate::LocatedSpan;
+use nom_supreme::error::BaseErrorKind;
 
 use crate::utils::parse_int;
+
+pub type Span<'a> = LocatedSpan<&'a str>;
+
+#[derive(thiserror::Error, Debug, miette::Diagnostic)]
+#[error("Bad input")]
+pub struct BadInput<'input> {
+    #[source_code]
+    src: &'input str,
+
+    #[label("{kind}")]
+    bad_bit: miette::SourceSpan,
+
+    kind: BaseErrorKind<&'input str, Box<dyn std::error::Error + Send + Sync + 'input>>,
+}
 
 pub fn single_digit_line<'a, E>(input: &'a [u8]) -> IResult<&'a [u8], std::vec::Vec<usize>, E>
 where

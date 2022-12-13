@@ -1,17 +1,7 @@
-use std::{
-    fs::File,
-    io::{BufWriter, Write},
-};
-
 use color_eyre::Result;
 use itertools::Itertools;
 use ndarray::Array2;
-use petgraph::{
-    algo::{connected_components, dijkstra},
-    dot::{Config, Dot},
-    graph::NodeIndex,
-    Graph, Undirected,
-};
+use petgraph::{algo::dijkstra, graph::NodeIndex, Graph};
 
 use crate::{utils::four_neighbors, Runner};
 
@@ -104,13 +94,7 @@ impl Runner for Day {
     fn part1(input: &Self::Input<'_>) -> Result<usize> {
         let (graph, start, end) = input;
 
-        // println!("connected: {}", connected_components(&graph));
-        // let dot = Dot::with_config(&graph, &[Config::EdgeNoLabel]);
-        // let mut writer = BufWriter::new(File::create("output.dot")?);
-        // write!(writer, "{:?}", dot)?;
         let path = dijkstra(graph, *start, None, |_| 1);
-        // println!();
-        // println!("{path:#?}");
         Ok(*path.get(end).unwrap())
     }
 
