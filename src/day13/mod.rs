@@ -1,8 +1,4 @@
-use std::{
-    cmp::Ordering,
-    fmt::Debug,
-    iter::{once, zip},
-};
+use std::{cmp::Ordering, fmt::Debug, iter::once};
 
 use color_eyre::Result;
 use itertools::Itertools;
@@ -16,7 +12,7 @@ use nom::{
     sequence::{delimited, terminated, tuple},
     IResult,
 };
-use nom_supreme::{final_parser::final_parser, ParserExt};
+use nom_supreme::ParserExt;
 
 use crate::Runner;
 
@@ -127,16 +123,23 @@ impl Runner for Day {
     }
 
     fn part2(input: &Self::Input<'_>) -> Result<usize> {
-        let find = [packet("[[2]]").unwrap().1, packet("[[6]]").unwrap().1];
-        Ok(input
+        let packet_2 = packet("[[2]]").unwrap().1;
+        let packet_6 = packet("[[6]]").unwrap().1;
+        let answer = [packet_2, packet_6]
             .iter()
-            .map(|(a, b)| once(a).chain(once(b)))
-            .flatten()
-            .chain(&find)
-            .sorted()
             .enumerate()
-            .filter_map(|(i, a)| (a == &find[0] || a == &find[1]).then_some(i + 1))
-            .product())
+            .map(|(i, packet)| {
+                input
+                    .iter()
+                    .map(|(a, b)| once(a).chain(once(b)))
+                    .flatten()
+                    .filter(|&a| a < &packet)
+                    .count()
+                    + 1
+                    + i
+            })
+            .product();
+        Ok(answer)
     }
 }
 

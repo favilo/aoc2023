@@ -5,13 +5,14 @@ use itertools::Itertools;
 use nom::{
     branch::alt,
     bytes::complete::tag,
-    character::complete::{multispace0, newline, space0},
+    character::complete::{multispace0, newline, space0, u64},
     combinator::{all_consuming, map, opt},
     error::VerboseError,
     multi::{many0, many1},
     sequence::{delimited, preceded, terminated, tuple},
     IResult,
 };
+use num::Integer;
 
 use crate::{parsers::number, Runner};
 
@@ -19,11 +20,11 @@ pub struct Day;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Operand {
-    N(u128),
+    N(u64),
     Old,
 }
 impl Operand {
-    fn level(&self, worry: &u128) -> u128 {
+    fn level(&self, worry: &u64) -> u64 {
         match self {
             Operand::N(n) => *n,
             Operand::Old => *worry,
@@ -37,7 +38,7 @@ pub enum Op {
     Times(Operand, Operand),
 }
 impl Op {
-    pub(crate) fn apply(&self, worry: &u128) -> u128 {
+    pub(crate) fn apply(&self, worry: &u64) -> u64 {
         match self {
             Op::Plus(o1, o2) => o1.level(worry) + o2.level(worry),
             Op::Times(o1, o2) => o1.level(worry) * o2.level(worry),
@@ -48,9 +49,9 @@ impl Op {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Monkey {
     id: usize,
-    items: Vec<u128>,
+    items: Vec<u64>,
     op: Op,
-    test: usize,
+    test: u64,
     branches: [usize; 2],
     touched: usize,
 }
@@ -59,10 +60,10 @@ fn monkey_id(input: &str) -> IResult<&str, usize, VerboseError<&str>> {
     delimited(tag("Monkey "), number, terminated(tag(":"), newline))(input)
 }
 
-fn starting_items(input: &str) -> IResult<&str, Vec<u128>, VerboseError<&str>> {
+fn starting_items(input: &str) -> IResult<&str, Vec<u64>, VerboseError<&str>> {
     delimited(
         terminated(space0, tag("Starting items: ")),
-        many0(terminated(number::<_, u128, _>, opt(tag(", ")))),
+        many0(terminated(number::<_, u64, _>, opt(tag(", ")))),
         newline,
     )(input)
 }
@@ -90,10 +91,10 @@ fn operation(input: &str) -> IResult<&str, Op, VerboseError<&str>> {
     )(input)
 }
 
-fn test(input: &str) -> IResult<&str, usize, VerboseError<&str>> {
+fn test(input: &str) -> IResult<&str, u64, VerboseError<&str>> {
     delimited(
         tuple((space0, tag("Test: divisible by "))),
-        number,
+        u64,
         multispace0,
     )(input)
 }
@@ -135,7 +136,7 @@ fn monkey(input: &str) -> IResult<&str, Monkey, VerboseError<&str>> {
 }
 
 impl Monkey {
-    fn take_turn(&mut self) -> Vec<(usize, u128)> {
+    fn take_turn(&mut self) -> Vec<(usize, u64)> {
         // println!("Monkey {}", self.id);
         let moves = self
             .items
@@ -145,11 +146,7 @@ impl Monkey {
                 // println!("Worry {worry} -> {:?} -> {worry1}", self.op);
                 let worry2 = worry1 / 3;
                 // println!("Worry {worry1} -> div 3 -> {worry2}");
-                let test_idx = if worry2 % self.test as u128 == 0 {
-                    0
-                } else {
-                    1
-                };
+                let test_idx = if worry2 % self.test == 0 { 0 } else { 1 };
                 // println!(
                 //     "{} divisible by {}: {}",
                 //     worry2,
@@ -165,7 +162,7 @@ impl Monkey {
         moves
     }
 
-    fn take_turn_no_worry_div(&mut self, modulus: u128) -> Vec<(usize, u128)> {
+    fn take_turn_no_worry_div(&mut self, modulus: u64) -> Vec<(usize, u64)> {
         // println!("Monkey {}", self.id);
         let moves = self
             .items
@@ -174,11 +171,7 @@ impl Monkey {
                 let worry1 = self.op.apply(&worry);
                 // println!("Worry {worry} -> {:?} -> {worry1}", self.op);
                 let worry2 = worry1 % modulus;
-                let test_idx = if worry1 % self.test as u128 == 0 {
-                    0
-                } else {
-                    1
-                };
+                let test_idx = if worry1 % self.test == 0 { 0 } else { 1 };
                 // println!(
                 //     "{} divisible by {}: {}",
                 //     worry2,
@@ -194,7 +187,7 @@ impl Monkey {
         moves
     }
 
-    fn accept_item(&mut self, item: u128) {
+    fn accept_item(&mut self, item: u64) {
         self.items.push(item);
     }
 }
@@ -211,7 +204,7 @@ fn do_round(monkeys: &mut Vec<Option<Monkey>>) {
     }
 }
 
-fn do_round2(monkeys: &mut Vec<Option<Monkey>>, modulus: u128) {
+fn do_round2(monkeys: &mut Vec<Option<Monkey>>, modulus: u64) {
     for monkey_id in 0..monkeys.len() {
         let mut this_monkey = monkeys[monkey_id].take().unwrap();
         this_monkey
@@ -258,9 +251,7 @@ impl Runner for Day {
         let modulus = monkeys
             .iter()
             .flatten()
-            .map(|m| m.test as u128)
-            .unique()
-            .product::<u128>();
+            .fold(1, |acc, m| acc.lcm(&(m.test)));
         (1..=10_000).for_each(|_| {
             do_round2(&mut monkeys, modulus);
             // println!("After round {i}:");

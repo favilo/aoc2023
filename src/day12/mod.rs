@@ -36,12 +36,12 @@ impl Height {
 #[derive(Debug, Clone, Copy)]
 pub struct Position {
     _coords: (usize, usize),
-    height: Height,
+    _height: Height,
 }
 
 impl Runner for Day {
     type Input<'input> = (
-        Graph<Position, ()>,
+        Graph<(), ()>,
         NodeIndex<u32>,
         NodeIndex<u32>,
         Vec<NodeIndex<u32>>,
@@ -67,11 +67,11 @@ impl Runner for Day {
         let mut array = Array2::from_shape_vec((height, width), v)?;
         // Add nodes to graph
         array.indexed_iter_mut().for_each(|((r, c), h)| {
-            let p = Position {
+            let _p = Position {
                 _coords: (r, c),
-                height: h.0,
+                _height: h.0,
             };
-            h.1 = Some(graph.add_node(p));
+            h.1 = Some(graph.add_node(()));
         });
 
         // Add edges to graph
