@@ -15,6 +15,7 @@ use nom_supreme::error::BaseErrorKind;
 
 use crate::utils::parse_int;
 
+#[allow(dead_code)]
 pub type Span<'a> = LocatedSpan<&'a str>;
 
 #[derive(thiserror::Error, Debug, miette::Diagnostic)]

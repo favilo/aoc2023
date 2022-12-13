@@ -19,15 +19,15 @@ impl Height {
         match b {
             b'S' => Self::Start,
             b'E' => Self::End,
-            c @ b'a'..=b'z' => Self::Height((c - b'a') as _),
+            c @ b'a'..=b'z' => Self::Height(c as _),
             _ => unreachable!(),
         }
     }
 
     fn height(self) -> usize {
         match self {
-            Height::Start => 0,
-            Height::End => (b'z' - b'a') as _,
+            Height::Start => b'a' as _,
+            Height::End => b'z' as _,
             Height::Height(height) => height,
         }
     }
@@ -40,7 +40,12 @@ pub struct Position {
 }
 
 impl Runner for Day {
-    type Input<'input> = (Graph<Position, ()>, NodeIndex<u32>, NodeIndex<u32>);
+    type Input<'input> = (
+        Graph<Position, ()>,
+        NodeIndex<u32>,
+        NodeIndex<u32>,
+        Vec<NodeIndex<u32>>,
+    );
 
     fn day() -> usize {
         12
@@ -50,6 +55,7 @@ impl Runner for Day {
         let height = input.lines().count();
         let width = input.lines().next().unwrap().len();
         let mut start = None;
+        let mut other_starts = vec![];
         let mut end = None;
         let v = input
             .lines()
@@ -73,6 +79,9 @@ impl Runner for Day {
             if *h == Height::Start {
                 start = id.clone();
             }
+            if h.height() == Height::Start.height() {
+                other_starts.push(id.unwrap().clone());
+            }
             if *h == Height::End {
                 end = id.clone();
             }
@@ -88,30 +97,26 @@ impl Runner for Day {
                 });
         });
 
-        Ok((graph, start.unwrap(), end.unwrap()))
+        Ok((graph, start.unwrap(), end.unwrap(), other_starts))
     }
 
     fn part1(input: &Self::Input<'_>) -> Result<usize> {
-        let (graph, start, end) = input;
+        let (graph, start, end, _) = input;
 
         let path = dijkstra(graph, *start, None, |_| 1);
         Ok(*path.get(end).unwrap())
     }
 
     fn part2(input: &Self::Input<'_>) -> Result<usize> {
-        let (graph, _, end) = input;
+        let (graph, _, end, other_starts) = input;
         let mut graph = graph.clone();
         graph.reverse();
 
         let paths = dijkstra(&graph, *end, None, |_| 1);
-        Ok(*graph
-            .node_indices()
-            .map(|id| (id, graph.node_weight(id).unwrap().clone()))
-            .filter(|(_, n)| n.height.height() == Height::Start.height())
-            .map(|(id, _)| (id, paths.get(&id)))
-            .min_by_key(|(_, d)| d.unwrap_or(&i32::MAX))
-            .unwrap()
-            .1
+        Ok(other_starts
+            .into_iter()
+            .map(|id| *paths.get(&id).unwrap_or(&i32::MAX))
+            .min()
             .unwrap() as usize)
     }
 }
@@ -135,6 +140,6 @@ mod tests {
 
     prod_case! {
         part1 = 361;
-        part2 = 201684;
+        part2 = 354;
     }
 }
