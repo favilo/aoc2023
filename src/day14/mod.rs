@@ -1,10 +1,10 @@
 use std::{
-    collections::HashMap,
+    collections::HashSet,
     ops::{Add, AddAssign},
 };
 
 use color_eyre::Result;
-use itertools::{iterate, Itertools};
+use itertools::Itertools;
 use nom::{
     bytes::complete::tag, character::complete::u64, combinator::map, error::VerboseError,
     multi::separated_list1, sequence::separated_pair, IResult,
@@ -14,8 +14,7 @@ use crate::Runner;
 
 pub struct Day;
 
-type ParseResult<'a, T> = IResult<&'a str, T, VerboseError<&'a str>>;
-type Finished = bool;
+type ParseResult<'a, T> = IResult<&'a [u8], T, VerboseError<&'a [u8]>>;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum Status {
@@ -30,34 +29,10 @@ pub struct NextStep {
     status: Status,
 }
 
-// Lets do x-500 so we can center around the origin
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub struct Coord(isize, isize);
+pub struct Coord(i64, i64);
 
 impl Coord {
-    fn next_step(self, map: &HashMap<Coord, Cell>) -> NextStep {
-        let neighbor = self.neighbors().into_iter().find(|n| !map.contains_key(n));
-        if let Some(coord) = neighbor {
-            // TODO: Eventually check for exited better
-            if coord.1 > 200 {
-                NextStep {
-                    coord,
-                    status: Status::Exited,
-                }
-            } else {
-                NextStep {
-                    coord,
-                    status: Status::Falling,
-                }
-            }
-        } else {
-            NextStep {
-                coord: self,
-                status: Status::Stuck,
-            }
-        }
-    }
-
     fn neighbors(self) -> [Coord; 3] {
         [self + Coord(0, 1), self + Coord(-1, 1), self + Coord(1, 1)]
     }
@@ -85,13 +60,13 @@ pub enum Cell {
     Sand,
 }
 
-fn rock_point(input: &str) -> ParseResult<Coord> {
+fn rock_point(input: &[u8]) -> ParseResult<Coord> {
     map(separated_pair(u64, tag(","), u64), |(c, r)| {
-        Coord(c as isize - 500, r as isize)
+        Coord(c.try_into().unwrap(), r.try_into().unwrap())
     })(input)
 }
 
-fn rock_curve(input: &str) -> ParseResult<Vec<Coord>> {
+fn rock_curve(input: &[u8]) -> ParseResult<Vec<Coord>> {
     let (input, points) = separated_list1(tag(" -> "), rock_point)(input)?;
     let points = points
         .into_iter()
@@ -117,43 +92,46 @@ fn rock_curve(input: &str) -> ParseResult<Vec<Coord>> {
     Ok((input, points))
 }
 
-fn parse_map(input: &str) -> Result<HashMap<Coord, Cell>> {
-    Ok(input
+fn parse_map(input: &str) -> Result<(HashSet<Coord>, i64)> {
+    let map = input
         .lines()
+        .map(str::as_bytes)
         .map(|line| rock_curve(line).unwrap().1)
         .flatten()
-        .map(|c| (c, Cell::Rock))
-        .collect::<HashMap<_, _>>())
+        .collect::<HashSet<_>>();
+    let highest = map.iter().map(|c| c.1).max().unwrap();
+    Ok((map, highest))
 }
 
-fn run_grain(map: &mut HashMap<Coord, Cell>) -> Finished {
-    let start = Coord(0, 0);
-    if map.contains_key(&start) {
-        return true;
+fn run_grain(map: &mut HashSet<Coord>, bottom: i64, has_floor: bool) -> usize {
+    let start = Coord(500, 0);
+    let stone_count = map.len();
+    let mut q = vec![];
+
+    q.push(start);
+    while let Some(&c @ Coord(_, y)) = q.last() {
+        let found_space = y <= bottom
+            && c.neighbors()
+                .into_iter()
+                .filter(|c| !map.contains(c))
+                .find(|c: &Coord| -> bool {
+                    q.push(*c);
+                    true
+                })
+                .is_some();
+        if !found_space {
+            map.insert(c.clone());
+            q.pop();
+        } else if !has_floor && y >= bottom {
+            break;
+        }
     }
-    let end = iterate(
-        NextStep {
-            coord: start,
-            status: Status::Falling,
-        },
-        |last_step| last_step.coord.next_step(map),
-    )
-    .find(|s| !matches!(s.status, Status::Falling))
-    .unwrap();
-    if end.status == Status::Exited {
-        // println!("Exited at {end:?}");
-        true
-    } else if end.status == Status::Stuck {
-        // println!("Stopped falling at {end:?}");
-        map.insert(end.coord, Cell::Sand);
-        false
-    } else {
-        unreachable!("Should never exit with Falling")
-    }
+
+    map.len() - stone_count
 }
 
 impl Runner for Day {
-    type Input<'input> = HashMap<Coord, Cell>;
+    type Input<'input> = (HashSet<Coord>, i64);
 
     fn day() -> usize {
         14
@@ -164,27 +142,13 @@ impl Runner for Day {
     }
 
     fn part1(input: &Self::Input<'_>) -> Result<usize> {
-        let mut map = input.clone();
-        Ok((1..)
-            .map(|i| (i, run_grain(&mut map)))
-            .take_while(|(_, finished)| !finished)
-            .last()
-            .unwrap()
-            .0)
+        let mut map = input.0.clone();
+        Ok(run_grain(&mut map, input.1, false))
     }
 
     fn part2(input: &Self::Input<'_>) -> Result<usize> {
-        let highest = input.keys().map(|c| c.1).max().unwrap();
-        let mut map = input.clone();
-        (-200..=200).for_each(|y| {
-            map.insert(Coord(y, highest + 2), Cell::Rock);
-        });
-        Ok((1..)
-            .map(|i| (i, run_grain(&mut map)))
-            .take_while(|(_, finished)| !finished)
-            .last()
-            .unwrap()
-            .0)
+        let mut map = input.0.clone();
+        Ok(run_grain(&mut map, input.1, true))
     }
 }
 
