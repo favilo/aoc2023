@@ -1,5 +1,3 @@
-use std::cmp::Reverse;
-
 use color_eyre::Result;
 use itertools::Itertools;
 use nom::{

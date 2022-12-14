@@ -1,11 +1,10 @@
 use color_eyre::Result;
-use heapless::{
-    binary_heap::{Max, Min},
-    BinaryHeap,
-};
 use itertools::Itertools;
 
-use crate::{utils::{parse_int, top::TopK}, Runner};
+use crate::{
+    utils::{parse_int, top::TopK},
+    Runner,
+};
 
 pub struct Day;
 
