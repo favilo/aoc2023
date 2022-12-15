@@ -10,34 +10,15 @@ use nom::{
     IResult,
 };
 
-use crate::{utils::parse_int, Runner};
+use crate::{
+    utils::{parse_int, RangeIncExt},
+    Runner,
+};
 
 pub struct Day;
 
 #[derive(Debug)]
 pub struct Pair(RangeInclusive<usize>, RangeInclusive<usize>);
-
-trait RangeIncExt {
-    fn inside(&self, other: &Self) -> bool;
-    fn inside_or_surrounding(&self, other: &Self) -> bool {
-        self.inside(other) || other.inside(self)
-    }
-
-    fn overlaps(&self, other: &Self) -> bool;
-}
-
-impl RangeIncExt for RangeInclusive<usize> {
-    fn inside(&self, other: &Self) -> bool {
-        other.contains(self.start()) && other.contains(self.end())
-    }
-
-    fn overlaps(&self, other: &Self) -> bool {
-        other.contains(self.start())
-            || other.contains(self.end())
-            || self.contains(other.start())
-            || self.contains(other.end())
-    }
-}
 
 fn range(input: &[u8]) -> IResult<&[u8], RangeInclusive<usize>> {
     let (input, (first, second)) =

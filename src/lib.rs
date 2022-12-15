@@ -56,6 +56,7 @@ run_days!(
     day12 = 12,
     day13 = 13,
     day14 = 14,
+    day15 = 15,
 );
 
 pub trait Runner<Part1 = usize, Part2 = usize>
@@ -150,7 +151,7 @@ pub(crate) mod helpers {
 
     macro_rules! prod_case {
         (part1 = $part1:expr; part2 = $part2:expr;) => {
-            mod prod_tests {
+            mod prod {
                 use super::*;
                 use std::fs::read_to_string;
 

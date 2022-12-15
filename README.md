@@ -79,6 +79,10 @@ day14/get_input         time:   [515.79 µs 517.19 µs 518.86 µs]
 day14/part1             time:   [161.99 µs 162.19 µs 162.44 µs]
 day14/part2             time:   [4.8894 ms 4.9112 ms 4.9333 ms]
 
+day15/get_input         time:   [13.889 µs 14.147 µs 14.407 µs]
+day15/part1             time:   [609.88 ns 611.73 ns 613.82 ns]
+day15/part2             time:   [21.073 ms 21.168 ms 21.292 ms]
+
 ```
 
 ## Original Timings
@@ -142,6 +146,10 @@ day13/part2             time:   [126.06 µs 127.47 µs 129.19 µs]
 day14/get_input         time:   [553.22 µs 561.93 µs 572.66 µs]
 day14/part1             time:   [4.0320 ms 4.0556 ms 4.0850 ms]
 day14/part2             time:   [135.89 ms 137.34 ms 139.09 ms]
+
+day15/get_input         time:   [13.889 µs 14.147 µs 14.407 µs]
+day15/part1             time:   [609.88 ns 611.73 ns 613.82 ns]
+day15/part2             time:   [21.073 ms 21.168 ms 21.292 ms]
 
 ```
 
