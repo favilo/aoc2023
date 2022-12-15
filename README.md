@@ -79,9 +79,9 @@ day14/get_input         time:   [515.79 µs 517.19 µs 518.86 µs]
 day14/part1             time:   [161.99 µs 162.19 µs 162.44 µs]
 day14/part2             time:   [4.8894 ms 4.9112 ms 4.9333 ms]
 
-day15/get_input         time:   [13.889 µs 14.147 µs 14.407 µs]
-day15/part1             time:   [609.88 ns 611.73 ns 613.82 ns]
-day15/part2             time:   [21.073 ms 21.168 ms 21.292 ms]
+day15/get_input         time:   [10.945 µs 10.960 µs 10.975 µs]
+day15/part1             time:   [1.0852 µs 1.0864 µs 1.0877 µs]
+day15/part2             time:   [201.82 ms 203.62 ms 206.02 ms]
 
 ```
 
