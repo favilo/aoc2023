@@ -1,7 +1,6 @@
 pub(crate) mod top;
 
 use std::{
-    fmt::Debug,
     fs::OpenOptions,
     io::Write,
     ops::{Range, RangeInclusive, Sub},

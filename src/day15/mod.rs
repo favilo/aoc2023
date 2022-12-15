@@ -152,6 +152,7 @@ fn ranges_for_row(row: i64, pairs: &[SensorPair], limits: Range<i64>) -> Vec<Ran
     ranges
 }
 
+#[allow(dead_code)]
 fn get_freq_cheat(limit: i64, pairs: &[SensorPair], estimate: f32) -> usize {
     // Middle out
     let row = interleave(
