@@ -18,7 +18,7 @@ use crate::Runner;
 
 pub struct Day;
 
-#[derive(Clone, Eq, PartialEq, Ord)]
+#[derive(Clone, Eq, PartialEq)]
 pub enum Entry {
     List(Vec<Entry>),
     Int(usize),
@@ -67,12 +67,24 @@ impl PartialOrd for Entry {
     }
 }
 
-#[derive(Debug, Clone, Eq, PartialEq, Ord)]
+impl Ord for Entry {
+    fn cmp(&self, other: &Self) -> Ordering {
+        self.partial_cmp(other).unwrap()
+    }
+}
+
+#[derive(Debug, Clone, Eq, PartialEq)]
 pub struct Packet(Entry);
 
 impl PartialOrd for Packet {
     fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
         self.0.partial_cmp(&other.0)
+    }
+}
+
+impl Ord for Packet {
+    fn cmp(&self, other: &Self) -> Ordering {
+        self.partial_cmp(other).unwrap()
     }
 }
 
@@ -131,9 +143,8 @@ impl Runner for Day {
             .map(|(i, packet)| {
                 input
                     .iter()
-                    .map(|(a, b)| once(a).chain(once(b)))
-                    .flatten()
-                    .filter(|&a| a < &packet)
+                    .flat_map(|(a, b)| once(a).chain(once(b)))
+                    .filter(|&a| a < packet)
                     .count()
                     + 1
                     + i

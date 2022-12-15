@@ -143,9 +143,7 @@ where
     }
 
     fn size(&self) -> usize {
-        (self.end().clone() - self.start().clone())
-            .try_into()
-            .unwrap()
+        (*self.end() - *self.start()).try_into().unwrap()
     }
 }
 

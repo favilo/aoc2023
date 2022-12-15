@@ -24,8 +24,7 @@ where
         });
         let mut new = BinaryHeap::<_, Max, K>::new();
         (0..K).for_each(|_| {
-            new.push(this.pop().unwrap_or_else(Default::default))
-                .unwrap();
+            new.push(this.pop().unwrap_or_default()).unwrap();
         });
         Self(new)
     }

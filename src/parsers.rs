@@ -60,7 +60,7 @@ where
         |(s, d): (Option<&[u8]>, &[u8])| {
             let parsed = parse_int(d.as_bytes()) as isize;
             if s.is_some() {
-                -parsed as isize
+                -parsed
             } else {
                 parsed
             }

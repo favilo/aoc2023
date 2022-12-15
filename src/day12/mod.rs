@@ -59,8 +59,7 @@ impl Runner for Day {
         let mut end = None;
         let v = input
             .lines()
-            .map(|line| line.bytes())
-            .flatten()
+            .flat_map(|line| line.bytes())
             .map(|b| (Height::from_byte(b), None))
             .collect_vec();
         let mut graph = Graph::with_capacity(height * width, height * width);
@@ -77,20 +76,20 @@ impl Runner for Day {
         // Add edges to graph
         array.indexed_iter().for_each(|((r, c), (h, id))| {
             if *h == Height::Start {
-                start = id.clone();
+                start = *id;
             }
             if h.height() == Height::Start.height() {
-                other_starts.push(id.unwrap().clone());
+                other_starts.push(id.unwrap());
             }
             if *h == Height::End {
-                end = id.clone();
+                end = *id;
             }
             four_neighbors((r, c), (height, width))
                 .filter_map(|(or, oc)| {
                     let other = array[(or, oc)];
                     let height = other.0.height();
                     let diff = height as isize - h.height() as isize;
-                    (diff < 2).then(|| other.1)
+                    (diff < 2).then_some(other.1)
                 })
                 .for_each(|o_id| {
                     graph.update_edge(id.unwrap(), o_id.unwrap(), ());
@@ -114,8 +113,8 @@ impl Runner for Day {
 
         let paths = dijkstra(&graph, *end, None, |_| 1);
         Ok(other_starts
-            .into_iter()
-            .map(|id| *paths.get(&id).unwrap_or(&i32::MAX))
+            .iter()
+            .map(|id| *paths.get(id).unwrap_or(&i32::MAX))
             .min()
             .unwrap() as usize)
     }

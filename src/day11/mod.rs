@@ -141,18 +141,9 @@ impl Monkey {
             .drain(..)
             .map(|worry| {
                 let worry1 = self.op.apply(&worry);
-                // println!("Worry {worry} -> {:?} -> {worry1}", self.op);
                 let worry2 = worry1 / 3;
-                // println!("Worry {worry1} -> div 3 -> {worry2}");
-                let test_idx = if worry2 % self.test == 0 { 0 } else { 1 };
-                // println!(
-                //     "{} divisible by {}: {}",
-                //     worry2,
-                //     self.test,
-                //     worry2 % self.test == 0
-                // );
+                let test_idx = usize::from(worry2 % self.test != 0);
                 let throw_to = self.branches[test_idx];
-                // println!("Throwing to {throw_to}");
                 (throw_to, worry2)
             })
             .collect_vec();
@@ -167,17 +158,9 @@ impl Monkey {
             .drain(..)
             .map(|worry| {
                 let worry1 = self.op.apply(&worry);
-                // println!("Worry {worry} -> {:?} -> {worry1}", self.op);
                 let worry2 = worry1 % modulus;
-                let test_idx = if worry1 % self.test == 0 { 0 } else { 1 };
-                // println!(
-                //     "{} divisible by {}: {}",
-                //     worry2,
-                //     self.test,
-                //     worry2 % self.test == 0
-                // );
+                let test_idx = usize::from(worry1 % self.test != 0);
                 let throw_to = self.branches[test_idx];
-                // println!("Throwing to {throw_to}");
                 (throw_to, worry2)
             })
             .collect_vec();

@@ -142,7 +142,7 @@ impl Runner<String<9>, String<9>> for Day {
         Ok(stacks
             .iter()
             .map(|l| l.last().unwrap())
-            .map(|c| c.0 as char)
+            .map(|c| c.0)
             .collect())
     }
 
@@ -165,7 +165,7 @@ impl Runner<String<9>, String<9>> for Day {
         Ok(stacks
             .iter()
             .map(|l| l.last().unwrap())
-            .map(|c| c.0 as char)
+            .map(|c| c.0)
             .collect())
     }
 }

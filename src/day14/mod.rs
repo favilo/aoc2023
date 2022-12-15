@@ -71,7 +71,7 @@ fn rock_curve(input: &[u8]) -> ParseResult<Vec<Coord>> {
     let points = points
         .into_iter()
         .tuple_windows()
-        .map(|(Coord(c0, r0), Coord(c1, r1))| {
+        .flat_map(|(Coord(c0, r0), Coord(c1, r1))| {
             if c0 == c1 {
                 // vertical
                 (r0.min(r1)..=r0.max(r1))
@@ -87,7 +87,6 @@ fn rock_curve(input: &[u8]) -> ParseResult<Vec<Coord>> {
                 unreachable!()
             }
         })
-        .flatten()
         .collect();
     Ok((input, points))
 }
@@ -96,8 +95,7 @@ fn parse_map(input: &str) -> Result<(HashSet<Coord>, i64)> {
     let map = input
         .lines()
         .map(str::as_bytes)
-        .map(|line| rock_curve(line).unwrap().1)
-        .flatten()
+        .flat_map(|line| rock_curve(line).unwrap().1)
         .collect::<HashSet<_>>();
     let highest = map.iter().map(|c| c.1).max().unwrap();
     Ok((map, highest))
@@ -114,13 +112,13 @@ fn run_grain(map: &mut HashSet<Coord>, bottom: i64, has_floor: bool) -> usize {
             && c.neighbors()
                 .into_iter()
                 .filter(|c| !map.contains(c))
-                .find(|c: &Coord| -> bool {
-                    q.push(*c);
+                .any(|c: Coord| -> bool {
+                    q.push(c);
                     true
-                })
-                .is_some();
+                });
+
         if !found_space {
-            map.insert(c.clone());
+            map.insert(c);
             q.pop();
         } else if !has_floor && y >= bottom {
             break;

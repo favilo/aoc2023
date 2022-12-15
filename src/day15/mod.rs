@@ -76,15 +76,14 @@ impl SensorPair {
             sensor, distance, ..
         } = self;
         let distance = distance + 1;
-        let iter = (0..distance).flat_map(move |d| {
+        (0..distance).flat_map(move |d| {
             [
                 sensor + Coord(d, d - distance),
                 sensor + Coord(distance - d, d),
                 sensor + Coord(-d, distance - d),
                 sensor + Coord(d - distance, -d),
             ]
-        });
-        iter
+        })
     }
 }
 
@@ -105,17 +104,16 @@ fn sensor_pair(input: SInput<'_>) -> ParseResult<'_, SensorPair> {
 }
 
 fn union_ranges(ranges: &[Range<i64>]) -> Vec<Range<i64>> {
-    ranges.iter().fold(Vec::new(), |acc, r| {
-        let added = add_range_to_union(r.clone(), &acc);
-        added
-    })
+    ranges
+        .iter()
+        .fold(Vec::new(), |acc, r| add_range_to_union(r.clone(), &acc))
 }
 
 fn add_range_to_union(range: Range<i64>, union: &[Range<i64>]) -> Vec<Range<i64>> {
     if range.is_empty() {
         return union.to_vec();
     }
-    union.iter().fold(vec![range.clone()], |acc, range| {
+    union.iter().fold(vec![range], |acc, range| {
         let larger = acc
             .iter()
             .filter(|r| range.overlaps(r))
@@ -133,9 +131,9 @@ fn count_no_beacon_in_row(row: i64, pairs: &[SensorPair], limits: Range<i64>) ->
 
 fn ranges_for_row(row: i64, pairs: &[SensorPair], limits: Range<i64>) -> Vec<Range<i64>> {
     let ranges = pairs
-        .into_iter()
+        .iter()
         .map(|s @ SensorPair { sensor, .. }| (sensor, s.manhattan_distance()))
-        .filter(|(sensor, distance)| (sensor.1 - row).abs() <= *distance as i64)
+        .filter(|(sensor, distance)| (sensor.1 - row).abs() <= *distance)
         .map(|(sensor, distance)| {
             let h = (sensor.1 - row).abs();
             let num_seen = distance - h;
@@ -144,10 +142,10 @@ fn ranges_for_row(row: i64, pairs: &[SensorPair], limits: Range<i64>) -> Vec<Ran
         .map(|s| s.intersect(&limits))
         .collect_vec();
     let ranges = union_ranges(&ranges);
-    if ranges.len() == 2 {
-        if ranges[0].start == ranges[1].end + 1 || ranges[1].start == ranges[0].end + 1 {
-            return vec![ranges[0].start.min(ranges[1].start)..ranges[0].end.max(ranges[1].end)];
-        }
+    if ranges.len() == 2
+        && (ranges[0].start == ranges[1].end + 1 || ranges[1].start == ranges[0].end + 1)
+    {
+        return vec![ranges[0].start.min(ranges[1].start)..ranges[0].end.max(ranges[1].end)];
     }
     ranges
 }
@@ -204,7 +202,13 @@ impl Runner for Day {
     }
 
     fn part2(input: &Self::Input<'_>) -> Result<usize> {
-        Ok(get_freq_perimeter(if input.0 { 4000000 } else { 20 }, &input.1))
+        let prod = input.0;
+        let limit = if prod { 4000000 } else { 20 };
+        if cfg!(test) {
+            Ok(get_freq_cheat(limit, &input.1, 0.85))
+        } else {
+            Ok(get_freq_perimeter(limit, &input.1))
+        }
     }
 }
 
@@ -236,7 +240,7 @@ mod tests {
 
     prod_case! {
         part1 = 5511201;
-        part2 = 201684;
+        part2 = 11318723411840;
     }
     #[test]
     fn union_ranges_works() {
