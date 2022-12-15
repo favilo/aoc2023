@@ -1,5 +1,4 @@
 use std::{
-    collections::HashSet,
     iter::once,
     ops::{Add, AddAssign, Range},
 };
@@ -42,12 +41,50 @@ impl AddAssign<Coord> for Coord {
     }
 }
 
+impl Coord {
+    fn manhattan_distance(self, other: Self) -> i64 {
+        (self.0 - other.0).abs() + (self.1 - other.1).abs()
+    }
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub struct SensorPair(Coord, Coord);
+pub struct SensorPair {
+    sensor: Coord,
+    beacon: Coord,
+    distance: i64,
+}
 
 impl SensorPair {
+    fn new(sensor: Coord, beacon: Coord) -> Self {
+        Self {
+            sensor,
+            beacon,
+            distance: sensor.manhattan_distance(beacon),
+        }
+    }
+
     fn manhattan_distance(self) -> i64 {
-        (self.0 .0 - self.1 .0).abs() + (self.0 .1 - self.1 .1).abs()
+        self.distance
+    }
+
+    fn contains(self, coord: Coord) -> bool {
+        self.sensor.manhattan_distance(coord) <= self.manhattan_distance()
+    }
+
+    fn perimeter(self) -> impl Iterator<Item = Coord> {
+        let SensorPair {
+            sensor, distance, ..
+        } = self;
+        let distance = distance + 1;
+        let iter = (0..distance).flat_map(move |d| {
+            [
+                sensor + Coord(d, d - distance),
+                sensor + Coord(distance - d, d),
+                sensor + Coord(-d, distance - d),
+                sensor + Coord(d - distance, -d),
+            ]
+        });
+        iter
     }
 }
 
@@ -64,7 +101,7 @@ fn sensor_pair(input: SInput<'_>) -> ParseResult<'_, SensorPair> {
         )),
         opt(line_ending),
     )(input)?;
-    Ok((input, SensorPair(sensor, beacon)))
+    Ok((input, SensorPair::new(sensor, beacon)))
 }
 
 fn union_ranges(ranges: &[Range<i64>]) -> Vec<Range<i64>> {
@@ -97,7 +134,7 @@ fn count_no_beacon_in_row(row: i64, pairs: &[SensorPair], limits: Range<i64>) ->
 fn ranges_for_row(row: i64, pairs: &[SensorPair], limits: Range<i64>) -> Vec<Range<i64>> {
     let ranges = pairs
         .into_iter()
-        .map(|s @ SensorPair(sensor, _)| (sensor, s.manhattan_distance()))
+        .map(|s @ SensorPair { sensor, .. }| (sensor, s.manhattan_distance()))
         .filter(|(sensor, distance)| (sensor.1 - row).abs() <= *distance as i64)
         .map(|(sensor, distance)| {
             let h = (sensor.1 - row).abs();
@@ -115,7 +152,7 @@ fn ranges_for_row(row: i64, pairs: &[SensorPair], limits: Range<i64>) -> Vec<Ran
     ranges
 }
 
-fn get_freq(limit: i64, pairs: &[SensorPair], estimate: f32) -> usize {
+fn get_freq_cheat(limit: i64, pairs: &[SensorPair], estimate: f32) -> usize {
     // Middle out
     let row = interleave(
         (limit as f32 * estimate) as i64..=limit,
@@ -132,6 +169,17 @@ fn get_freq(limit: i64, pairs: &[SensorPair], estimate: f32) -> usize {
     let ranges = row.1;
     let row = row.0;
     let col = ranges[0].end.min(ranges[1].end) + 1;
+    (col * 4_000_000 + row) as usize
+}
+
+fn get_freq_perimeter(limit: i64, pairs: &[SensorPair]) -> usize {
+    let Coord(col, row) = pairs
+        .iter()
+        .flat_map(|p| p.perimeter())
+        .filter(|c| [c.0, c.1].into_iter().all(|c| (0..=limit).contains(&c)))
+        .find(|c| pairs.iter().all(|p| !p.contains(*c)))
+        .unwrap();
+
     // println!("{row} x {col}");
     (col * 4_000_000 + row) as usize
 }
@@ -144,8 +192,8 @@ impl Runner for Day {
     }
 
     fn get_input(input: &str) -> Result<Self::Input<'_>> {
-        let mut vec = all_consuming(many1(sensor_pair))(input).unwrap().1;
-        vec.sort_by_key(|p| p.1 .0);
+        let vec = all_consuming(many1(sensor_pair))(input).unwrap().1;
+        // vec.sort_by_key(|p| p.sensor.0);
         Ok((vec.len() != 14, vec))
     }
 
@@ -155,7 +203,7 @@ impl Runner for Day {
     }
 
     fn part2(input: &Self::Input<'_>) -> Result<usize> {
-        Ok(get_freq(if input.0 { 4000000 } else { 20 }, &input.1, 0.85))
+        Ok(get_freq_perimeter(if input.0 { 4000000 } else { 20 }, &input.1))
     }
 }
 
