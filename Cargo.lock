@@ -73,6 +73,7 @@ dependencies = [
  "nom-supreme",
  "nom_locate",
  "num",
+ "once_cell",
  "petgraph",
  "pprof",
  "reqwest",

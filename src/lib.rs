@@ -1,5 +1,6 @@
 #![feature(associated_type_defaults)]
 #![feature(associated_type_bounds)]
+#![feature(drain_filter)]
 use std::{
     fmt::Debug,
     fs::read_to_string,
@@ -57,6 +58,8 @@ run_days!(
     day13 = 13,
     day14 = 14,
     day15 = 15,
+    // day16 = 16,
+    day17 = 17,
 );
 
 pub trait Runner<Part1 = usize, Part2 = usize>
@@ -131,7 +134,7 @@ pub(crate) mod helpers {
                     let input = $input;
                     println!("{}", input);
                     let input = Day::get_input(input)?;
-                    println!("{:?}", input);
+                    println!("{:#?}", input);
                     assert_eq!($part1, Day::part1(&input)?);
                     Ok(())
                 }
@@ -141,7 +144,7 @@ pub(crate) mod helpers {
                     let input = $input;
                     println!("{}", input);
                     let input = Day::get_input(input)?;
-                    println!("{:?}", input);
+                    println!("{:#?}", input);
                     assert_eq!($part2, Day::part2(&input)?);
                     Ok(())
                 }
