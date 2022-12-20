@@ -83,6 +83,16 @@ day15/get_input         time:   [10.945 µs 10.960 µs 10.975 µs]
 day15/part1             time:   [1.0852 µs 1.0864 µs 1.0877 µs]
 day15/part2             time:   [201.82 ms 203.62 ms 206.02 ms]
 
+day16 was skipped so far
+
+day17/get_input         time:   [36.383 µs 36.763 µs 37.221 µs]
+day17/part1             time:   [12.986 ms 13.055 ms 13.147 ms]
+day17/part2             time:   [21.521 ms 21.616 ms 21.729 ms]
+
+day18/get_input         time:   [305.46 µs 307.87 µs 312.47 µs]
+day18/part1             time:   [374.82 µs 375.41 µs 376.12 µs]
+day18/part2             time:   [3.4047 ms 3.4103 ms 3.4163 ms]
+
 ```
 
 ## Original Timings
@@ -150,6 +160,16 @@ day14/part2             time:   [135.89 ms 137.34 ms 139.09 ms]
 day15/get_input         time:   [13.889 µs 14.147 µs 14.407 µs]
 day15/part1             time:   [609.88 ns 611.73 ns 613.82 ns]
 day15/part2             time:   [21.073 ms 21.168 ms 21.292 ms]
+
+day16 was skipped so far
+
+day17/get_input         time:   [36.383 µs 36.763 µs 37.221 µs]
+day17/part1             time:   [12.986 ms 13.055 ms 13.147 ms]
+day17/part2             time:   [21.521 ms 21.616 ms 21.729 ms]
+
+day18/get_input         time:   [305.46 µs 307.87 µs 312.47 µs]
+day18/part1             time:   [374.82 µs 375.41 µs 376.12 µs]
+day18/part2             time:   [3.4047 ms 3.4103 ms 3.4163 ms]
 
 ```
 

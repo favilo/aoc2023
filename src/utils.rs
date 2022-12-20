@@ -81,6 +81,19 @@ pub fn four_neighbors(
 }
 
 #[allow(dead_code)]
+pub fn six_neighbors(idx: [isize; 3]) -> impl Iterator<Item = [isize; 3]> {
+    [
+        [idx[0] - 1, idx[1], idx[2]],
+        [idx[0], idx[1] - 1, idx[2]],
+        [idx[0], idx[1], idx[2] - 1],
+        [idx[0] + 1, idx[1], idx[2]],
+        [idx[0], idx[1] + 1, idx[2]],
+        [idx[0], idx[1], idx[2] + 1],
+    ]
+    .into_iter()
+}
+
+#[allow(dead_code)]
 pub fn print_array(array: &Array2<usize>) {
     for row in array.axis_iter(Axis(0)) {
         for c in row {
