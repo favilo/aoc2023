@@ -1,6 +1,7 @@
 #![feature(associated_type_defaults)]
 #![feature(associated_type_bounds)]
 #![feature(drain_filter)]
+#![feature(hash_drain_filter)]
 use std::{
     fmt::Debug,
     fs::read_to_string,
@@ -58,7 +59,7 @@ run_days!(
     day13 = 13,
     day14 = 14,
     day15 = 15,
-    // day16 = 16,
+    day16 = 16,
     day17 = 17,
     day18 = 18,
 );
