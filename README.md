@@ -99,6 +99,10 @@ day20/get_input         time:   [135.24 µs 135.47 µs 135.81 µs]
 day20/part1             time:   [5.9936 ms 5.9968 ms 6.0006 ms]
 day20/part2             time:   [61.314 ms 61.629 ms 62.088 ms]
 
+day21/get_input         time:   [363.56 µs 364.28 µs 365.24 µs]
+day21/part1             time:   [68.049 µs 68.386 µs 68.937 µs]
+day21/part2             time:   [502.31 µs 505.85 µs 511.63 µs]
+
 ```
 
 ## Original Timings
@@ -182,6 +186,10 @@ day18/part2             time:   [3.4047 ms 3.4103 ms 3.4163 ms]
 day20/get_input         time:   [135.24 µs 135.47 µs 135.81 µs]
 day20/part1             time:   [5.9936 ms 5.9968 ms 6.0006 ms]
 day20/part2             time:   [61.314 ms 61.629 ms 62.088 ms]
+
+day21/get_input         time:   [363.56 µs 364.28 µs 365.24 µs]
+day21/part1             time:   [68.049 µs 68.386 µs 68.937 µs]
+day21/part2             time:   [502.31 µs 505.85 µs 511.63 µs]
 
 ```
 
@@ -351,4 +359,3 @@ day09/part2 time: [766.63 µs 776.74 µs 790.37 µs]
 
 ```
 </details>
-```
