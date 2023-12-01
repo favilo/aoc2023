@@ -3,4 +3,3 @@
 * !filter !diff
 *.gpg binary
 .env filter=git-crypt diff=git-crypt
-```
