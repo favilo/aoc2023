@@ -97,7 +97,7 @@ fn main() -> Result<()> {
         PANIC_ON_ALLOCATE.store(true, std::sync::atomic::Ordering::SeqCst);
     }
 
-    let time = aoc2022::run(days, args.track_allocations)?;
+    let time = aoc2023::run(days, args.track_allocations)?;
     log::info!("Total Time: {:?}", time);
 
     Ok(())

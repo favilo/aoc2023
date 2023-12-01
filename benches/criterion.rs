@@ -2,17 +2,18 @@ use std::fs::read_to_string;
 
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
 
-use aoc2022::Runner;
+use aoc2023::Runner;
 use pprof::{criterion::Output, flamegraph::Options};
 
 macro_rules! days {
+    () => {};
     ($day:ident) => {
-        use aoc2022::$day;
+        use aoc2023::$day;
 
         fn $day(c: &mut Criterion) {
             let mut group = c.benchmark_group(stringify!($day));
             let input =
-                read_to_string(format!("input/2022/day{:02}.txt", $day::Day::day())).unwrap();
+                read_to_string(format!("input/2023/day{:02}.txt", $day::Day::day())).unwrap();
             group.bench_function("get_input", |b| {
                 b.iter(|| black_box($day::Day::get_input(&input)))
             });
@@ -22,20 +23,20 @@ macro_rules! days {
             group.finish();
         }
     };
-    ($day:ident, $($days:ident),+) => {
+    ($day:ident, $($days:ident),*) => {
         days! { $day }
-        days! { $($days),+ }
+        days! { $($days),* }
     };
 }
 
 macro_rules! benches {
-    ($day:ident, $($days:ident),+ $(,)?) => {
-        days! { $day, $($days),+ }
+    ($day:ident, $($days:ident),* $(,)?) => {
+        days! { $day, $($days),* }
         criterion_group!(
             name = benches;
             config = custom();
             targets = $day,
-                $($days),+
+                $($days),*
         );
 
         criterion_main!(benches);
@@ -43,9 +44,8 @@ macro_rules! benches {
 }
 
 benches!(
-    day01, day02, day03, day04, day05, day06, day07, day08, day09, day10, day11, day12, day13,
-    day14, day15, day16, day17, day18, // day19,
-    day20, day21,
+    day01,
+    // day02,
 );
 
 fn custom() -> Criterion {

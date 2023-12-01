@@ -1,7 +1,7 @@
 #![feature(associated_type_defaults)]
 #![feature(associated_type_bounds)]
-#![feature(drain_filter)]
-#![feature(hash_drain_filter)]
+// #![feature(drain_filter)]
+// #![feature(hash_drain_filter)]
 use std::{
     fmt::Debug,
     fs::read_to_string,
@@ -17,7 +17,7 @@ use crate::utils::download_input;
 mod parsers;
 mod utils;
 
-pub const YEAR: usize = 2022;
+pub const YEAR: usize = 2023;
 
 macro_rules! run_days {
     ($day:ident = $id:expr, $($days:ident = $ids:expr),* $(,)?) => {
@@ -27,7 +27,7 @@ macro_rules! run_days {
             let mut total_time = Duration::ZERO;
             if days.is_empty() {
                 total_time += $day::Day::run(track)?;
-                $(total_time += $days::Day::run(track)?;)+
+                $(total_time += $days::Day::run(track)?;)*
             } else {
                 for day in days {
                     total_time += match day {
@@ -45,25 +45,7 @@ macro_rules! run_days {
 
 run_days!(
     day01 = 1,
-    day02 = 2,
-    day03 = 3,
-    day04 = 4,
-    day05 = 5,
-    day06 = 6,
-    day07 = 7,
-    day08 = 8,
-    day09 = 9,
-    day10 = 10,
-    day11 = 11,
-    day12 = 12,
-    day13 = 13,
-    day14 = 14,
-    day15 = 15,
-    day16 = 16,
-    day17 = 17,
-    day18 = 18,
-    day20 = 20,
-    day21 = 21,
+    // day02 = 2,
 );
 
 pub trait Runner<Part1 = usize, Part2 = usize>
@@ -146,6 +128,31 @@ pub(crate) mod helpers {
                 #[test]
                 fn part2() -> Result<()> {
                     let input = $input;
+                    println!("{}", input);
+                    let input = Day::get_input(input)?;
+                    println!("{:#?}", input);
+                    assert_eq!($part2, Day::part2(&input)?);
+                    Ok(())
+                }
+            }
+        };
+        ($id:ident => input1 = $input1:expr; part1 = $part1:expr; input2 = $input2:expr; part2 = $part2:expr;) => {
+            mod $id {
+                use super::*;
+
+                #[test]
+                fn part1() -> Result<()> {
+                    let input = $input1;
+                    println!("{}", input);
+                    let input = Day::get_input(input)?;
+                    println!("{:#?}", input);
+                    assert_eq!($part1, Day::part1(&input)?);
+                    Ok(())
+                }
+
+                #[test]
+                fn part2() -> Result<()> {
+                    let input = $input2;
                     println!("{}", input);
                     let input = Day::get_input(input)?;
                     println!("{:#?}", input);

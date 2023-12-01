@@ -1,5 +1,5 @@
 [package]
-name = "aoc2022"
+name = "aoc2023"
 version = "0.1.0"
 edition = "2021"
 
@@ -16,12 +16,12 @@ clap = { version = "4.0.29", features = ["derive"] }
 color-eyre = "0.6.2"
 dotenv = "0.15.0"
 fern = { version = "0.6.1", features = ["colored"] }
-hash32 = "0.2.1"
+hash32 = "0.3.1"
 hash32-derive = "0.1.1"
-heapless = "0.7.16"
+heapless = "0.8.0"
 home = "0.5.4"
 id_tree = "1.8.0"
-itertools = "0.10.5"
+itertools = "0.12.0"
 log = "0.4.17"
 miette = { version = "5.5.0", features = ["fancy"] }
 mimalloc = { version = "0.1.32", default-features = false }
@@ -37,12 +37,12 @@ rayon = "1.6.1"
 reqwest = { version = "0.11.13", features = ["blocking"] }
 text_io = "0.1.12"
 thiserror = "1.0.37"
-tqdm = "0.4.2"
+tqdm = "0.6.0"
 tracking-allocator = "0.4.0"
 
 [dev-dependencies]
-criterion = { version = "0.3.5", features = ["html_reports"] }
-pprof = { version = "0.6.1", features = ["flamegraph", "criterion"] }
+criterion = { version = "0.5.1", features = ["html_reports"] }
+pprof = { version = "0.13.0", features = ["flamegraph", "criterion"] }
 
 [[bench]]
 name = "criterion"
