@@ -45,7 +45,8 @@ macro_rules! benches {
 
 benches!(
     day01,
-    // day02,
+    day02,
+    // day03,
 );
 
 fn custom() -> Criterion {
