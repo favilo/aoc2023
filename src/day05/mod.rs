@@ -1,4 +1,7 @@
-use std::collections::HashMap;
+use std::{
+    collections::{BTreeMap, HashMap},
+    ops::Range,
+};
 
 use color_eyre::Result;
 use winnow::{
@@ -10,32 +13,41 @@ use winnow::{
 use crate::Runner;
 
 #[derive(Debug, Clone, Default)]
+struct RangeChanger {
+    map: Vec<(Range<usize>, Range<usize>)>,
+}
+
+impl RangeChanger {
+    fn get(&self, src: usize) -> usize {
+        self.map
+            .iter()
+            .find(|(range, _)| range.contains(&src))
+            .map(|(range, dst)| dst.start + (src - range.start))
+            .unwrap_or(src)
+    }
+}
+
+#[derive(Debug, Clone, Default)]
 pub struct Maps {
     seeds: Vec<usize>,
-    seed_to_soil: HashMap<usize, usize>,
-    soil_to_fertilizer: HashMap<usize, usize>,
-    fertilizer_to_water: HashMap<usize, usize>,
-    water_to_light: HashMap<usize, usize>,
-    light_to_temperature: HashMap<usize, usize>,
-    temperature_to_humidity: HashMap<usize, usize>,
-    humidity_to_location: HashMap<usize, usize>,
+    seed_to_soil: RangeChanger,
+    soil_to_fertilizer: RangeChanger,
+    fertilizer_to_water: RangeChanger,
+    water_to_light: RangeChanger,
+    light_to_temperature: RangeChanger,
+    temperature_to_humidity: RangeChanger,
+    humidity_to_location: RangeChanger,
 }
 
 impl Maps {
     fn seed_to_location(&self, seed: usize) -> usize {
-        let soil = self.seed_to_soil.get(&seed).unwrap_or(&seed);
-        let fertilizer = self.soil_to_fertilizer.get(soil).unwrap_or(soil);
-        let water = self
-            .fertilizer_to_water
-            .get(fertilizer)
-            .unwrap_or(fertilizer);
-        let light = self.water_to_light.get(water).unwrap_or(water);
-        let temperature = self.light_to_temperature.get(light).unwrap_or(light);
-        let humidity = self
-            .temperature_to_humidity
-            .get(temperature)
-            .unwrap_or(temperature);
-        *self.humidity_to_location.get(humidity).unwrap_or(humidity)
+        let soil = self.seed_to_soil.get(seed);
+        let fertilizer = self.soil_to_fertilizer.get(soil);
+        let water = self.fertilizer_to_water.get(fertilizer);
+        let light = self.water_to_light.get(water);
+        let temperature = self.light_to_temperature.get(light);
+        let humidity = self.temperature_to_humidity.get(temperature);
+        self.humidity_to_location.get(humidity)
     }
 
     fn parse(input: &mut &str) -> PResult<Self> {
@@ -72,14 +84,12 @@ impl Maps {
     }
 }
 
-fn mut_hash_map(lists: Vec<Vec<usize>>, maps: &mut HashMap<usize, usize>) {
+fn mut_hash_map(lists: Vec<Vec<usize>>, maps: &mut RangeChanger) {
     lists.into_iter().for_each(|list| {
         let [dst, src, cnt] = list.as_slice() else {
             panic!("malformed map");
         };
-        (*dst..).zip(*src..).take(*cnt).for_each(|(dst, src)| {
-            maps.insert(src, dst);
-        });
+        maps.map.push((*src..*src + *cnt, *dst..*dst + *cnt));
     });
 }
 
@@ -118,8 +128,19 @@ impl Runner for Day {
             .unwrap_or(0))
     }
 
+    // TODO: implement splitting of ranges, and binary-search(?)
     fn part2(input: &Self::Input<'_>) -> Result<usize> {
-        todo!()
+        Ok(input
+            .seeds
+            .chunks_exact(2)
+            .map(|slice| {
+                (slice[0]..)
+                    .take(slice[1])
+                    .map(|seed| input.seed_to_location(seed))
+            })
+            .flatten()
+            .min()
+            .unwrap_or(0))
     }
 }
 
@@ -164,11 +185,11 @@ humidity-to-location map:
 60 56 37
 56 93 4";
             part1 = 35;
-            part2 = 19;
+            part2 = 46;
     }
 
     prod_case! {
-        part1 = 1681;
+        part1 = 323142486;
         part2 = 201684;
     }
 }
